@@ -1,33 +1,5 @@
-#!/bin/bash
-# SetupApp.sh - ShipTrack V2.2 Final Fixed Installer
-# Full data + automatic port handling + clean install
-
-set -e
-
-echo "🚢 ShipTrack V2.2 - Final Fixed Installer"
-echo "========================================"
-
-read -p "Enter installation directory (default: ~/ShipTrack-XAi): " INSTALL_DIR
-INSTALL_DIR=${INSTALL_DIR:-~/ShipTrack-XAi}
-
-echo "🧹 Cleaning previous installation..."
-rm -rf "$INSTALL_DIR"
-
-echo "📁 Creating clean installation in $INSTALL_DIR ..."
-mkdir -p "$INSTALL_DIR"
-cd "$INSTALL_DIR"
-mkdir -p logs
-
-# Kill any running instance on port 8000
-if lsof -Pi :8000 -sTCP:LISTEN -t >/dev/null 2>&1; then
-    echo "🔄 Killing previous instance on port 8000..."
-    lsof -Pi :8000 -sTCP:LISTEN -t | xargs kill -9 2>/dev/null || true
-fi
-
-# ====================== COMPLETE SHIPTRACK V2.2 ======================
-cat > ShipTrack_V2.2.py << 'PYEOF'
 #!/usr/bin/env python3
-# ShipTrack V2.2 - Full Production Backend with Complete Data
+# ShipTrack V2.2 - FINAL FIXED VERSION (All tabs should now show data)
 
 import http.server
 import socketserver
@@ -114,7 +86,7 @@ HTML_CONTENT = """<!DOCTYPE html>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
         body { font-family: 'Inter', system_ui, sans-serif; }
         .title-font { font-family: 'Inter', system_ui, sans-serif; font-weight: 700; letter-spacing: -2px; }
-        #map { filter: brightness(0.95) contrast(1.05); }
+        #map { filter: brightness(0.95) contrast(1.05); height: 520px; }
         .grok-chat { max-height: 520px; overflow-y: auto; scroll-behavior: smooth; }
         .chart-container { position: relative; height: 260px; }
     </style>
@@ -145,7 +117,7 @@ HTML_CONTENT = """<!DOCTYPE html>
 
             <div id="content-0" class="tab-content">
                 <h2 class="text-3xl font-semibold mb-4">Live AIS Vessel Tracking</h2>
-                <div id="map" class="h-[520px] rounded-3xl border border-zinc-800 shadow-2xl"></div>
+                <div id="map" class="rounded-3xl border border-zinc-800 shadow-2xl"></div>
             </div>
 
             <div id="content-1" class="tab-content hidden">
@@ -166,7 +138,7 @@ HTML_CONTENT = """<!DOCTYPE html>
                 <div id="market-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10"></div>
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <div class="bg-zinc-900 rounded-3xl p-6">
-                        <h3 class="text-lg font-medium mb-4">Market History (Last 30 updates)</h3>
+                        <h3 class="text-lg font-medium mb-4">Market History</h3>
                         <div class="chart-container"><canvas id="historyChart"></canvas></div>
                     </div>
                     <div id="grok-market-reply" class="bg-zinc-900 rounded-3xl p-6 min-h-[300px] text-sm"></div>
@@ -180,8 +152,7 @@ HTML_CONTENT = """<!DOCTYPE html>
                 </div>
                 <div id="chat-window" class="grok-chat bg-zinc-900 rounded-3xl p-6 h-[520px] flex flex-col gap-4"></div>
                 <div class="mt-6 flex gap-3">
-                    <input id="chat-input" type="text" placeholder="Ask Grok about vessels, risk or markets..." 
-                           class="flex-1 bg-zinc-900 border border-zinc-700 focus:border-emerald-400 rounded-3xl px-6 py-4 outline-none">
+                    <input id="chat-input" type="text" placeholder="Ask Grok anything..." class="flex-1 bg-zinc-900 border border-zinc-700 focus:border-emerald-400 rounded-3xl px-6 py-4 outline-none">
                     <button onclick="sendGrokMessage()" class="bg-emerald-400 hover:bg-emerald-500 text-zinc-950 font-semibold px-8 rounded-3xl">SEND</button>
                 </div>
             </div>
@@ -190,8 +161,10 @@ HTML_CONTENT = """<!DOCTYPE html>
 
     <script>
         let VESSELS = [], PORTS = [], MANUFACTURERS = [];
-        let mapInstance = null, vesselMarkers = {}, routePolylines = {};
-        let pollingIntervalId = null, isPolling = false;
+        let mapInstance = null;
+        let vesselMarkers = {}, routePolylines = {};
+        let pollingIntervalId = null;
+        let isPolling = false;
         let chatHistory = JSON.parse(localStorage.getItem('grokChatHistory') || '[]');
         let historyChart = null;
 
@@ -227,7 +200,7 @@ HTML_CONTENT = """<!DOCTYPE html>
             let html = '';
             MANUFACTURERS.forEach(m => {
                 const color = m.risk_score > 80 ? 'rose' : m.risk_score > 65 ? 'amber' : 'emerald';
-                html += `<div class="card bg-zinc-900 border border-zinc-800 rounded-3xl p-6"><div class="flex justify-between"><div>${m.name}</div><div class="font-mono text-xl text-${color}-400">${m.risk_score}</div></div><div class="h-2 bg-zinc-700 rounded-full mt-6"><div class="h-2 bg-${color}-400 rounded-full" style="width:${m.risk_score}%"></div></div></div>`;
+                html += `<div class="card bg-zinc-900 border border-zinc-800 rounded-3xl p-6"><div class="flex justify-between"><div class="font-medium">${m.name}</div><div class="font-mono text-xl text-${color}-400">${m.risk_score}</div></div><div class="h-2 bg-zinc-700 rounded-full mt-4"><div class="h-2 bg-${color}-400 rounded-full" style="width:${m.risk_score}%"></div></div></div>`;
             });
             document.getElementById('risk-grid').innerHTML = html;
         }
@@ -236,7 +209,7 @@ HTML_CONTENT = """<!DOCTYPE html>
             let html = '';
             MANUFACTURERS.forEach(m => {
                 const color = m.delay_days > 10 ? 'rose' : 'emerald';
-                html += `<div class="card bg-zinc-900 border border-zinc-800 rounded-3xl p-6"><div class="font-semibold">${m.name}</div><div class="text-6xl font-bold text-${color}-400">${m.delay_days}</div><div class="text-xs text-zinc-400">days delayed</div></div>`;
+                html += `<div class="card bg-zinc-900 border border-zinc-800 rounded-3xl p-6"><div class="font-semibold">${m.name}</div><div class="text-6xl font-bold text-${color}-400 mt-4">${m.delay_days}</div><div class="text-xs text-zinc-400">days delayed</div></div>`;
             });
             document.getElementById('manufacturers-grid').innerHTML = html;
         }
@@ -246,7 +219,7 @@ HTML_CONTENT = """<!DOCTYPE html>
             Object.keys(indices).forEach(key => {
                 const i = indices[key];
                 const changeColor = i.change >= 0 ? 'emerald' : 'rose';
-                html += `<div class="card bg-zinc-900 border border-zinc-800 rounded-3xl p-6"><div class="text-sm text-zinc-400">${i.name}</div><div class="text-5xl font-semibold mt-2">${Math.round(i.value)}</div><div class="text-${changeColor}-400">${i.change >= 0 ? '↑' : '↓'} ${Math.abs(i.change).toFixed(1)}%</div><div class="text-xs text-zinc-500 mt-1">${i.unit}</div></div>`;
+                html += `<div class="card bg-zinc-900 border border-zinc-800 rounded-3xl p-6"><div class="text-sm text-zinc-400">${i.name}</div><div class="text-5xl font-semibold mt-2">${Math.round(i.value)}</div><div class="text-${changeColor}-400">${i.change >= 0 ? '↑' : '↓'} ${Math.abs(i.change).toFixed(1)}%</div><div class="text-xs text-zinc-500">${i.unit}</div></div>`;
             });
             document.getElementById('market-grid').innerHTML = html;
         }
@@ -264,28 +237,50 @@ HTML_CONTENT = """<!DOCTYPE html>
                         { label: 'Baltic Dry', data: history.map(h => h.baltic_dry), borderColor: '#3b82f6', tension: 0.3 }
                     ]
                 },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: true } } }
+                options: { responsive: true, maintainAspectRatio: false }
             });
         }
 
-        async function getGrokMarketInsight() {
-            const container = document.getElementById('grok-market-reply');
-            container.innerHTML = 'Grok analysing markets...';
+        async function fetchData() {
             try {
-                const res = await fetch('/grok', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({message: "Give a concise professional evaluation of current global container and dry bulk freight markets including key risks and opportunities."}) });
-                const data = await res.json();
-                container.innerHTML = data.reply.replace(/\n/g, '<br>');
+                const res = await fetch('/data');
+                const payload = await res.json();
+                
+                VESSELS = payload.vessels || VESSELS;
+                PORTS = payload.ports || PORTS;
+                MANUFACTURERS = payload.manufacturers || MANUFACTURERS;
+
+                renderMap();
+                renderRiskAnalytics();
+                renderManufacturers();
+                renderMarketIndices(payload.market_indices || {});
+                if (payload.market_history) updateHistoryChart(payload.market_history);
             } catch(e) {
-                container.innerHTML = 'Failed to get Grok insight.';
+                console.error('Fetch error:', e);
             }
         }
 
-        function renderChat() {
-            const win = document.getElementById('chat-window');
-            win.innerHTML = chatHistory.map(m => `<div class="${m.role==='user'?'ml-auto bg-emerald-500 text-white':'mr-auto bg-zinc-800'} max-w-[80%] rounded-3xl px-6 py-4">${m.content}</div>`).join('');
-            win.scrollTop = win.scrollHeight;
+        function showTab(n) {
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+            document.getElementById(`content-${n}`).classList.remove('hidden');
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('border-b-4','border-emerald-400','text-emerald-400'));
+            document.getElementById(`tab-${n}`).classList.add('border-b-4','border-emerald-400','text-emerald-400');
         }
 
+        function togglePolling() {
+            if (isPolling) {
+                clearInterval(pollingIntervalId);
+                isPolling = false;
+                document.getElementById('poll-btn').innerHTML = `<span class="text-lg">▶️</span><span>START POLLING</span>`;
+            } else {
+                isPolling = true;
+                document.getElementById('poll-btn').innerHTML = `<span class="text-lg">⏹️</span><span>STOP POLLING</span>`;
+                fetchData();
+                pollingIntervalId = setInterval(fetchData, 4000);
+            }
+        }
+
+        // Grok functions (minimal)
         async function sendGrokMessage() {
             const input = document.getElementById('chat-input');
             const msg = input.value.trim();
@@ -302,55 +297,37 @@ HTML_CONTENT = """<!DOCTYPE html>
             } catch(e) {}
         }
 
+        function renderChat() {
+            const win = document.getElementById('chat-window');
+            win.innerHTML = chatHistory.map(m => `<div class="${m.role==='user'?'ml-auto bg-emerald-500 text-white':'mr-auto bg-zinc-800'} max-w-[80%] rounded-3xl px-6 py-4">${m.content}</div>`).join('');
+            win.scrollTop = win.scrollHeight;
+        }
+
         function clearChatHistory() {
-            if (confirm('Clear chat history?')) {
+            if (confirm('Clear history?')) {
                 chatHistory = [];
                 localStorage.removeItem('grokChatHistory');
                 renderChat();
             }
         }
 
-        function showTab(n) {
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
-            document.getElementById(`content-${n}`).classList.remove('hidden');
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('border-b-4','border-emerald-400','text-emerald-400'));
-            document.getElementById(`tab-${n}`).classList.add('border-b-4','border-emerald-400','text-emerald-400');
-        }
-
-        async function fetchData() {
+        async function getGrokMarketInsight() {
+            const container = document.getElementById('grok-market-reply');
+            container.innerHTML = 'Grok analysing...';
             try {
-                const res = await fetch('/data');
-                const payload = await res.json();
-                VESSELS = payload.vessels || VESSELS;
-                PORTS = payload.ports || PORTS;
-                MANUFACTURERS = payload.manufacturers || MANUFACTURERS;
-                renderMap();
-                renderRiskAnalytics();
-                renderManufacturers();
-                renderMarketIndices(payload.market_indices || {});
-                if (payload.market_history) updateHistoryChart(payload.market_history);
-            } catch(e) { console.error(e); }
-        }
-
-        function togglePolling() {
-            if (isPolling) {
-                clearInterval(pollingIntervalId);
-                isPolling = false;
-                document.getElementById('poll-btn').innerHTML = `<span class="text-lg">▶️</span><span>START POLLING</span>`;
-            } else {
-                isPolling = true;
-                document.getElementById('poll-btn').innerHTML = `<span class="text-lg">⏹️</span><span>STOP POLLING</span>`;
-                fetchData();
-                pollingIntervalId = setInterval(fetchData, 5000);
+                const res = await fetch('/grok', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({message: "Give a short evaluation of current global freight markets."}) });
+                const data = await res.json();
+                container.innerHTML = data.reply.replace(/\n/g, '<br>');
+            } catch(e) {
+                container.innerHTML = 'Failed to get insight.';
             }
         }
 
         window.onload = () => {
             initMap();
             fetchData();
-            renderChat();
             showTab(0);
-            console.log('%c🚢 ShipTrack V2.2 Ready - Data should now be visible', 'color:#10b981');
+            console.log('%cShipTrack V2.2 - All tabs should now be populated', 'color:#10b981');
         };
     </script>
 </body>
@@ -380,7 +357,6 @@ class ShipTrackHandler(http.server.BaseHTTPRequestHandler):
     def send_data(self):
         global VESSELS, PORTS, MANUFACTURERS
 
-        # Simulate movement and updates
         for v in VESSELS:
             v["lat"] += (v["dest_lat"] - v["lat"]) * (0.028 + random.random() * 0.022)
             v["lng"] += (v["dest_lng"] - v["lng"]) * (0.028 + random.random() * 0.022)
@@ -463,20 +439,16 @@ def find_free_port(start_port=8000, max_attempts=10):
                 return port
         except OSError:
             continue
-    print("❌ Could not find a free port. Close other servers and try again.")
+    print("Could not find free port. Please close other servers.")
     sys.exit(1)
 
 def main():
     load_config()
     PORT = find_free_port()
-    
     print(f"🌐 ShipTrack V2.2 started at http://localhost:{PORT}")
-    print("   ✅ Full data loaded • AIS • Risk • Market Charts • Grok Chat")
-    print("   Press Ctrl+C to stop\n")
-
+    print("   All data should now appear in every tab")
     Handler = ShipTrackHandler
     socketserver.TCPServer.allow_reuse_address = True
-
     with socketserver.TCPServer(("", PORT), Handler) as httpd:
         try:
             webbrowser.open(f"http://localhost:{PORT}")
@@ -487,48 +459,3 @@ def main():
 if __name__ == "__main__":
     random.seed(42)
     main()
-PYEOF
-
-# Minimal requirements
-cat > requirements.txt << EOF
-requests
-EOF
-
-# Grok key
-echo ""
-echo "🔑 Grok API Key Setup"
-read -sp "Enter your xAI Grok API key (or press Enter to skip): " GROK_KEY
-echo ""
-
-mkdir -p .streamlit
-cat > .streamlit/secrets.toml << EOF
-[grok]
-key = "${GROK_KEY:-}"
-EOF
-chmod 600 .streamlit/secrets.toml
-
-# Install
-echo ""
-echo "📦 Installing dependencies..."
-pip install --upgrade pip
-pip install -r requirements.txt
-
-# Launcher
-cat > run.sh << 'RUNEOF'
-#!/bin/bash
-cd "$(dirname "$0")"
-echo "🚀 Launching ShipTrack V2.2..."
-python3 ShipTrack_V2.2.py
-RUNEOF
-
-chmod +x run.sh ShipTrack_V2.2.py
-
-echo ""
-echo "✅ Setup completed successfully!"
-echo ""
-echo "To launch:"
-echo "   cd $INSTALL_DIR"
-echo "   ./run.sh"
-echo ""
-echo "The app should now show vessels, risk cards, manufacturers, market indices, and charts."
-echo "If you still see no data, refresh the page or click 'START POLLING'."
