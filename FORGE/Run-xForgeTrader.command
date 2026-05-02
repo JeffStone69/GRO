@@ -1,4 +1,4 @@
-#!/bin/bash
-cd "$(dirname "$0")"
+cd "/Users/jeff/Downloads/XAi/GIT/App/FORGE"
 source venv/bin/activate
-python3 xforge_trader_v6.py
+pip install --upgrade gradio yfinance pandas numpy plotly "pandas-ta" openai
+python xforge_trader_v7.py
