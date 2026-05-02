@@ -52,9 +52,9 @@ def get_recent_errors():
 def clear_cache():
     for f in CACHE_DIR.glob("*.parquet"):
         f.unlink(missing_ok=True)
-    return "✅ Cache cleared – fresh data will be downloaded"
+    return "✅ Cache cleared"
 
-# ====================== DEMO DATASET ======================
+# ====================== DEMO DATASET (Always Safe) ======================
 def get_demo_data(ticker):
     np.random.seed(hash(ticker) % 10000)
     dates = pd.date_range(end=datetime.now(), periods=500, freq='D')
@@ -67,7 +67,7 @@ def get_demo_data(ticker):
     df.index.name = 'Date'
     return df
 
-# ====================== DATA LAYER ======================
+# ====================== DATA LAYER (With Safety Guards) ======================
 def get_data(ticker, start_date=None, end_date=None, realtime=False, demo_mode=True):
     if demo_mode:
         return get_demo_data(ticker)
@@ -95,7 +95,8 @@ def get_data(ticker, start_date=None, end_date=None, realtime=False, demo_mode=T
         return get_demo_data(ticker)
 
 def add_indicators(df):
-    if df.empty: return df
+    if df.empty or len(df) < 20:
+        return pd.DataFrame()
     df = df.copy()
     df['SMA50'] = pta.sma(df['Close'], length=50)
     df['SMA200'] = pta.sma(df['Close'], length=200)
@@ -103,15 +104,20 @@ def add_indicators(df):
     df = pd.concat([df, pta.macd(df['Close'])], axis=1)
     df = pd.concat([df, pta.bbands(df['Close'], length=20)], axis=1)
     df['ATR'] = pta.atr(df['High'], df['Low'], df['Close'], length=14)
-    return df.dropna()
+    df = df.dropna()
+    if len(df) < 5:
+        return pd.DataFrame()
+    return df
 
 def create_candlestick(df, ticker):
     if df.empty or len(df) < 10:
         fig = go.Figure()
-        fig.add_annotation(text="No data – try Demo Mode or Clear Cache", x=0.5, y=0.5, showarrow=False)
+        fig.add_annotation(text="No data – try Demo Mode", x=0.5, y=0.5, showarrow=False)
         fig.update_layout(height=450, title=f"{ticker} – No Data")
         return fig
     df = add_indicators(df)
+    if df.empty:
+        return create_candlestick(pd.DataFrame(), ticker)
     fig = make_subplots(rows=3, cols=1, shared_xaxes=True, row_heights=[0.6, 0.2, 0.2])
     fig.add_trace(go.Candlestick(x=df.index, open=df['Open'], high=df['High'], low=df['Low'], close=df['Close']), row=1, col=1)
     fig.add_trace(go.Scatter(x=df.index, y=df['SMA50'], name="SMA50", line=dict(color="orange")), row=1, col=1)
@@ -120,7 +126,7 @@ def create_candlestick(df, ticker):
     fig.update_layout(height=650, title=f"{ticker} Technical Analysis", xaxis_rangeslider_visible=False)
     return fig
 
-# ====================== BACKTESTER & WALK-FORWARD ======================
+# ====================== BACKTESTER ======================
 def run_backtest(ticker, start_date, end_date, strategy="Rebound Dip", demo_mode=True):
     df = get_data(ticker, start_date, end_date, demo_mode=demo_mode)
     if len(df) < 20:
@@ -158,7 +164,7 @@ def forward_walk_predictor(ticker, demo_mode=True):
     test, _ = run_backtest(ticker, split, df.index[-1].strftime('%Y-%m-%d'), "Rebound Dip", demo_mode)
     return f"**Walk-Forward**\nTrain: {train.get('Total Return %','N/A')}%\nForward: {test.get('Total Return %','N/A')}%"
 
-# ====================== SCANNER ======================
+# ====================== SCANNER (Now Crash-Proof) ======================
 RECOMMENDED_MOMENTUM = ["TSLA", "AAPL", "NVDA", "AMD", "SMCI", "META", "AVGO", "MSFT", "GOOGL", "RIO.AX"]
 
 def scan_tickers(tickers_str, capital, risk_pct, start_date, end_date, realtime, demo_mode):
@@ -169,8 +175,10 @@ def scan_tickers(tickers_str, capital, risk_pct, start_date, end_date, realtime,
     
     for ticker in tickers[:10]:
         df_raw = get_data(ticker, start_date, end_date, realtime, demo_mode)
-        if df_raw.empty: continue
+        if df_raw.empty or len(df_raw) < 20: continue
         df = add_indicators(df_raw)
+        if df.empty or len(df) < 5: continue          # ← This line prevents the crash
+        
         latest = df.iloc[-1]
         prob = 0.58
         price = float(latest['Close'])
@@ -195,7 +203,7 @@ def scan_tickers(tickers_str, capital, risk_pct, start_date, end_date, realtime,
     
     if not results:
         demo_df = get_demo_data("TSLA")
-        return pd.DataFrame([{"Ticker": "DEMO", "Signal": "DEMO MODE", "Price": 0, "Stop Loss": 0, "Target": 0, "Position %": 0, "ML Prob": "0%", "Edge": 0, "RSI": 0}]), create_candlestick(demo_df, "TSLA"), "Demo data loaded – turn Demo Mode ON"
+        return pd.DataFrame([{"Ticker": "DEMO", "Signal": "DEMO MODE", "Price": 0, "Stop Loss": 0, "Target": 0, "Position %": 0, "ML Prob": "0%", "Edge": 0, "RSI": 0}]), create_candlestick(demo_df, "TSLA"), "Demo data loaded"
     
     df_out = pd.DataFrame(results).sort_values(by=["Edge"], ascending=False)
     summary = f"**Top Pick:** {top_rec['Signal']} **{top_rec['Ticker']}** @ ${top_rec['Price']} | Position {top_rec['Position %']}% | Edge {top_rec['Edge']}"
@@ -226,7 +234,7 @@ def self_improve(api_key, summary):
     try:
         from openai import OpenAI
         client = OpenAI(api_key=api_key, base_url="https://api.x.ai/v1")
-        prompt = f"Fix these concise errors in the trading app:\n{errors}\nUser note: {summary}"
+        prompt = f"Fix these concise errors:\n{errors}\nUser note: {summary}"
         resp = client.chat.completions.create(model="grok-4", messages=[{"role": "user", "content": prompt}], max_tokens=900)
         suggestion = resp.choices[0].message.content
         conn = sqlite3.connect(DB_PATH)
@@ -238,7 +246,7 @@ def self_improve(api_key, summary):
 
 # ====================== GRADIO UI ======================
 with gr.Blocks(title="xForgeTrader", theme=gr.themes.Soft()) as demo:
-    gr.Markdown("# 🧠 xForgeTrader – Demo Mode ON by Default + macOS Fixed\n**No version numbers in file names (as requested)**")
+    gr.Markdown("# 🧠 xForgeTrader – Crash-Proof Scanner + Demo Mode ON")
 
     with gr.Row():
         refresh_btn = gr.Button("🧹 Clear Cache & Force Refresh", variant="secondary")
@@ -248,7 +256,7 @@ with gr.Blocks(title="xForgeTrader", theme=gr.themes.Soft()) as demo:
     with gr.Tab("📊 Profit Scanner"):
         with gr.Row():
             tickers_input = gr.Textbox(label="Tickers", value="TSLA, AAPL, NVDA")
-            load_btn = gr.Button("Load Recommended Momentum List")
+            load_btn = gr.Button("Load Recommended List")
             demo_btn = gr.Button("Load Test Data (Instant)", variant="secondary")
         with gr.Row():
             capital = gr.Number(value=100000)
@@ -256,7 +264,7 @@ with gr.Blocks(title="xForgeTrader", theme=gr.themes.Soft()) as demo:
             start_date = gr.Textbox(value=(datetime.now() - timedelta(days=730)).strftime("%Y-%m-%d"), label="Start Date")
             end_date = gr.Textbox(value=datetime.now().strftime("%Y-%m-%d"), label="End Date")
             realtime = gr.Checkbox(label="Live Mode", value=False)
-            demo_mode = gr.Checkbox(label="Demo Mode (no internet) – Recommended", value=True)
+            demo_mode = gr.Checkbox(label="Demo Mode (Recommended)", value=True)
         scan_btn = gr.Button("🚀 SCAN", variant="primary")
         table = gr.Dataframe()
         summary = gr.Markdown()
@@ -335,11 +343,11 @@ with gr.Blocks(title="xForgeTrader", theme=gr.themes.Soft()) as demo:
         grok_out = gr.Markdown()
         grok_btn.click(get_grok_analysis, [grok_sum, api_key], grok_out)
 
-        improve_btn = gr.Button("🧠 Generate Grok Improvement (uses your error logs)")
+        improve_btn = gr.Button("🧠 Generate Grok Improvement")
         improve_out = gr.Markdown()
         improve_btn.click(self_improve, [api_key, grok_sum], improve_out)
 
-        gr.Markdown("**Recent Concise Error Logs**")
+        gr.Markdown("**Recent Error Logs**")
         show_errors_btn = gr.Button("Show Recent Logs")
         errors_out = gr.Markdown()
         show_errors_btn.click(get_recent_errors, outputs=errors_out)
@@ -352,12 +360,12 @@ with gr.Blocks(title="xForgeTrader", theme=gr.themes.Soft()) as demo:
 
         gr.Markdown("### One-Click from Finder")
         gr.Markdown("""
-        1. Create `Run-xForgeTrader.command` in the FORGE folder (use the content above).
+        1. Create `Run-xForgeTrader.command` in the FORGE folder.
         2. Run `chmod +x Run-xForgeTrader.command` in Terminal.
-        3. Right-click the `.command` file → **Open** (this bypasses macOS blocking).
+        3. Right-click the `.command` file → **Open**.
         """)
 
-    gr.Markdown("xForgeTrader – Demo Mode ON by default • macOS Gatekeeper fix • No version numbers in file names. Educational only.")
+    gr.Markdown("xForgeTrader – Crash-proof scanner • Demo Mode safe • Ready for GitHub. Educational only.")
 
 if __name__ == "__main__":
     demo.launch(server_name="0.0.0.0", server_port=7860, share=False)
