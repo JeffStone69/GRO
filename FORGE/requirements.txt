@@ -1,0 +1,9 @@
+gradio
+yfinance
+pandas
+numpy
+plotly
+pandas-ta
+scikit-learn
+scipy
+xai-sdk
