@@ -1,5 +1,6 @@
 #!/bin/bash
 cd "$(dirname "$0")"
-echo "Starting xForgeTrader v8..."
+
+echo "Starting xForgeTrader..."
 source venv/bin/activate
-python xforge_trader_v8.py
+python3 xforge_trader.py
