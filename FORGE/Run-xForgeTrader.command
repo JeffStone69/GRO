@@ -1,9 +1,7 @@
 #!/bin/bash
 # =============================================================================
-# Run-xForgeTrader.command - CLEAN FIRST-RUN LAUNCHER v3.0
-# Robust venv handling (full paths, no source activate), auto-cleans bloat,
-# preserves self-improve.db, installs every missing package (eventkit fix),
-# then launches XForge Trader. Zero startup failures after dependencies.
+# Run-xForgeTrader.command - CLEAN FIRST-RUN LAUNCHER v4.0
+# Forces automatic browser open (new Chrome tab) + all previous fixes
 # =============================================================================
 
 cd "$(dirname "$0")"
@@ -29,22 +27,18 @@ echo -e "${BOLD}${CYAN}║${NC}   ${GREEN}╚═╝  ╚═╝╚═╝      ╚
 echo -e "${BOLD}${CYAN}║                                                                            ║${NC}"
 echo -e "${BOLD}${CYAN}╚════════════════════════════════════════════════════════════════════════════╝${NC}"
 echo ""
-echo -e "${BOLD}${YELLOW}           XForge Trader v3.0 — Clean First-Run Edition${NC}"
-echo -e "${GREEN}           Robust Venv • Zero Bloat • Eventkit Fixed • Fresh Start${NC}"
+echo -e "${BOLD}${YELLOW}           XForge Trader v4.0 — Auto-Browser Edition${NC}"
+echo -e "${GREEN}           Auto-Cleanup • Eventkit Fixed • Browser Opens Automatically${NC}"
 echo ""
 
 echo -e "${CYAN}>>> Performing complete bloat cleanup...${NC}"
-
-# Safe bloat removal (keeps your self-improve.db and fetch/ data)
 rm -f .DS_Store
 rm -rf .gradio backups versions
 rm -f xforge_trader.old.py
-# NOTE: xforge_self_improve.db is NOT deleted — your improvement history is preserved
-
 mkdir -p fetch
 echo -e "${GREEN}✓ Bloat removed. fetch/ folder ready.${NC}"
 
-# ── Robust Virtual Environment (full paths, no source) ──────────────────────
+# ── Robust Virtual Environment ──────────────────────────────────────────────
 VENV_DIR="venv"
 VENV_PYTHON="$VENV_DIR/bin/python"
 VENV_PIP="$VENV_DIR/bin/pip"
@@ -56,38 +50,46 @@ if [ ! -d "$VENV_DIR" ]; then
 fi
 
 if [ ! -f "$VENV_PYTHON" ]; then
-    echo -e "${RED}✗ ERROR: venv Python not found at $VENV_PYTHON${NC}"
+    echo -e "${RED}✗ ERROR: venv Python not found${NC}"
     read -p "Press Enter to exit..."
     exit 1
 fi
 
 echo -e "${CYAN}>>> Using venv Python: $VENV_PYTHON${NC}"
 
-# ── Auto-Install All Dependencies (robust, using venv pip) ──────────────────
-echo -e "${CYAN}>>> Installing/updating all packages (eventkit + ib_insync + missing ones)...${NC}"
+# ── Auto-Install All Dependencies ───────────────────────────────────────────
+echo -e "${CYAN}>>> Installing/updating all packages...${NC}"
 "$VENV_PIP" install --upgrade pip
 if [ -f "requirements.txt" ]; then
     "$VENV_PIP" install -r requirements.txt --upgrade
-else
-    echo -e "${YELLOW}⚠️ requirements.txt not found — skipping${NC}"
 fi
 "$VENV_PIP" install --upgrade eventkit ib_insync yfinance pandas-ta plotly beautifulsoup4 requests numpy gradio openai
+echo -e "${GREEN}✓ All dependencies ready.${NC}"
 
-echo -e "${GREEN}✓ All dependencies installed and up to date.${NC}"
-
-# ── Launch the Application (using venv Python) ──────────────────────────────
+# ── Launch with Automatic Browser Open (new Chrome tab) ─────────────────────
 echo ""
-echo -e "${CYAN}>>> Starting XForge Trader on http://0.0.0.0:7860${NC}"
-echo -e "${YELLOW}Browser will open automatically...${NC}"
+echo -e "${CYAN}>>> Starting XForge Trader on http://127.0.0.1:7860${NC}"
+echo -e "${YELLOW}Browser will open automatically in a new tab...${NC}"
 echo ""
 echo -e "${BLUE}────────────────────────────────────────────────────────────────────────────${NC}"
-echo -e "${GREEN}   Close the Gradio tab or press Ctrl+C in this terminal to stop${NC}"
+echo -e "${GREEN}   Close the Gradio tab or press Ctrl+C here to stop${NC}"
 echo -e "${BLUE}────────────────────────────────────────────────────────────────────────────${NC}"
 echo ""
 
-"$VENV_PYTHON" xforge_trader.py
+# Run Python in background so we can open browser immediately
+"$VENV_PYTHON" xforge_trader.py &
+APP_PID=$!
 
-# ── POST-EXIT: Auto-Close Terminal (macOS) ───────────────────────────────────
+# Give Gradio a moment to start the server
+sleep 4
+
+# Force open in default browser (Chrome will receive new tab if already running)
+open "http://127.0.0.1:7860"
+
+# Keep terminal alive until Gradio is stopped
+wait $APP_PID
+
+# ── POST-EXIT: Auto-Close Terminal ──────────────────────────────────────────
 echo ""
 echo -e "${YELLOW}xForge Trader has shut down. Closing terminal...${NC}"
 sleep 1
@@ -101,4 +103,4 @@ tell application "Terminal"
 end tell
 ' 2>/dev/null || osascript -e 'tell application "Terminal" to close window 1' 2>/dev/null || true
 
-echo -e "${GREEN}Terminal closed. Clean first-run complete.${NC}"
+echo -e "${GREEN}Terminal closed. Clean run complete.${NC}"

@@ -247,3 +247,215 @@ ModuleNotFoundError: No module named 'eventkit'
 2026-05-04 06:55:31,367 | INFO | HTTP Request: HEAD http://localhost:7860/ "HTTP/1.1 200 OK"
 2026-05-04 06:55:31,630 | INFO | HTTP Request: HEAD https://huggingface.co/api/telemetry/https%3A/api.gradio.app/gradio-launched-telemetry "HTTP/1.1 200 OK"
 2026-05-04 06:55:31,638 | INFO | HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2026-05-04 06:58:17,631 | ERROR | IBKR Connection: There is no current event loop in thread 'AnyIO worker thread'.
+Traceback (most recent call last):
+  File "/Users/jeff/Downloads/XAi/GIT/Clone/GITHUB/FORGE/xforge_trader.py", line 143, in test_ibkr_connection
+    ib.connect(host, int(port), clientId=int(client_id), timeout=15, readonly=paper)
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeff/Downloads/XAi/GIT/Clone/GITHUB/FORGE/venv/lib/python3.13/site-packages/ib_insync/ib.py", line 279, in connect
+    return self._run(self.connectAsync(
+           ~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+        host, port, clientId, timeout, readonly, account))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeff/Downloads/XAi/GIT/Clone/GITHUB/FORGE/venv/lib/python3.13/site-packages/ib_insync/ib.py", line 318, in _run
+    return util.run(*awaitables, timeout=self.RequestTimeout)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeff/Downloads/XAi/GIT/Clone/GITHUB/FORGE/venv/lib/python3.13/site-packages/ib_insync/util.py", line 309, in run
+    loop = getLoop()
+  File "/Users/jeff/Downloads/XAi/GIT/Clone/GITHUB/FORGE/venv/lib/python3.13/site-packages/ib_insync/util.py", line 464, in getLoop
+    return asyncio.get_event_loop_policy().get_event_loop()
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/asyncio/events.py", line 716, in get_event_loop
+    raise RuntimeError('There is no current event loop in thread %r.'
+                       % threading.current_thread().name)
+RuntimeError: There is no current event loop in thread 'AnyIO worker thread'.
+
+2026-05-04 06:58:32,864 | ERROR | IBKR Connection: There is no current event loop in thread 'AnyIO worker thread'.
+Traceback (most recent call last):
+  File "/Users/jeff/Downloads/XAi/GIT/Clone/GITHUB/FORGE/xforge_trader.py", line 143, in test_ibkr_connection
+    ib.connect(host, int(port), clientId=int(client_id), timeout=15, readonly=paper)
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeff/Downloads/XAi/GIT/Clone/GITHUB/FORGE/venv/lib/python3.13/site-packages/ib_insync/ib.py", line 279, in connect
+    return self._run(self.connectAsync(
+           ~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+        host, port, clientId, timeout, readonly, account))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeff/Downloads/XAi/GIT/Clone/GITHUB/FORGE/venv/lib/python3.13/site-packages/ib_insync/ib.py", line 318, in _run
+    return util.run(*awaitables, timeout=self.RequestTimeout)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeff/Downloads/XAi/GIT/Clone/GITHUB/FORGE/venv/lib/python3.13/site-packages/ib_insync/util.py", line 309, in run
+    loop = getLoop()
+  File "/Users/jeff/Downloads/XAi/GIT/Clone/GITHUB/FORGE/venv/lib/python3.13/site-packages/ib_insync/util.py", line 464, in getLoop
+    return asyncio.get_event_loop_policy().get_event_loop()
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/asyncio/events.py", line 716, in get_event_loop
+    raise RuntimeError('There is no current event loop in thread %r.'
+                       % threading.current_thread().name)
+RuntimeError: There is no current event loop in thread 'AnyIO worker thread'.
+
+2026-05-04 07:02:46,954 | INFO | HTTP Request: HEAD https://huggingface.co/api/telemetry/https%3A/api.gradio.app/gradio-initiated-analytics "HTTP/1.1 200 OK"
+2026-05-04 07:02:47,134 | INFO | HTTP Request: GET http://localhost:7860/gradio_api/startup-events "HTTP/1.1 200 OK"
+2026-05-04 07:02:47,161 | INFO | HTTP Request: HEAD http://localhost:7860/ "HTTP/1.1 200 OK"
+2026-05-04 07:02:47,423 | INFO | HTTP Request: HEAD https://huggingface.co/api/telemetry/https%3A/api.gradio.app/gradio-launched-telemetry "HTTP/1.1 200 OK"
+2026-05-04 07:02:47,471 | INFO | HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2026-05-04 07:03:14,278 | ERROR | IBKR Connection: There is no current event loop in thread 'AnyIO worker thread'.
+Traceback (most recent call last):
+  File "/Users/jeff/Downloads/XAi/GIT/Clone/GITHUB/FORGE/xforge_trader.py", line 143, in test_ibkr_connection
+    ib.connect(host, int(port), clientId=int(client_id), timeout=15, readonly=paper)
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeff/Downloads/XAi/GIT/Clone/GITHUB/FORGE/venv/lib/python3.13/site-packages/ib_insync/ib.py", line 279, in connect
+    return self._run(self.connectAsync(
+           ~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+        host, port, clientId, timeout, readonly, account))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeff/Downloads/XAi/GIT/Clone/GITHUB/FORGE/venv/lib/python3.13/site-packages/ib_insync/ib.py", line 318, in _run
+    return util.run(*awaitables, timeout=self.RequestTimeout)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeff/Downloads/XAi/GIT/Clone/GITHUB/FORGE/venv/lib/python3.13/site-packages/ib_insync/util.py", line 309, in run
+    loop = getLoop()
+  File "/Users/jeff/Downloads/XAi/GIT/Clone/GITHUB/FORGE/venv/lib/python3.13/site-packages/ib_insync/util.py", line 464, in getLoop
+    return asyncio.get_event_loop_policy().get_event_loop()
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/asyncio/events.py", line 716, in get_event_loop
+    raise RuntimeError('There is no current event loop in thread %r.'
+                       % threading.current_thread().name)
+RuntimeError: There is no current event loop in thread 'AnyIO worker thread'.
+
+2026-05-04 07:03:28,071 | ERROR | IBKR Connection: There is no current event loop in thread 'AnyIO worker thread'.
+Traceback (most recent call last):
+  File "/Users/jeff/Downloads/XAi/GIT/Clone/GITHUB/FORGE/xforge_trader.py", line 143, in test_ibkr_connection
+    ib.connect(host, int(port), clientId=int(client_id), timeout=15, readonly=paper)
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeff/Downloads/XAi/GIT/Clone/GITHUB/FORGE/venv/lib/python3.13/site-packages/ib_insync/ib.py", line 279, in connect
+    return self._run(self.connectAsync(
+           ~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+        host, port, clientId, timeout, readonly, account))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeff/Downloads/XAi/GIT/Clone/GITHUB/FORGE/venv/lib/python3.13/site-packages/ib_insync/ib.py", line 318, in _run
+    return util.run(*awaitables, timeout=self.RequestTimeout)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeff/Downloads/XAi/GIT/Clone/GITHUB/FORGE/venv/lib/python3.13/site-packages/ib_insync/util.py", line 309, in run
+    loop = getLoop()
+  File "/Users/jeff/Downloads/XAi/GIT/Clone/GITHUB/FORGE/venv/lib/python3.13/site-packages/ib_insync/util.py", line 464, in getLoop
+    return asyncio.get_event_loop_policy().get_event_loop()
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/asyncio/events.py", line 716, in get_event_loop
+    raise RuntimeError('There is no current event loop in thread %r.'
+                       % threading.current_thread().name)
+RuntimeError: There is no current event loop in thread 'AnyIO worker thread'.
+
+2026-05-04 07:06:10,196 | ERROR | IBKR Connection: There is no current event loop in thread 'AnyIO worker thread'.
+Traceback (most recent call last):
+  File "/Users/jeff/Downloads/XAi/GIT/Clone/GITHUB/FORGE/xforge_trader.py", line 143, in test_ibkr_connection
+    ib.connect(host, int(port), clientId=int(client_id), timeout=15, readonly=paper)
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeff/Downloads/XAi/GIT/Clone/GITHUB/FORGE/venv/lib/python3.13/site-packages/ib_insync/ib.py", line 279, in connect
+    return self._run(self.connectAsync(
+           ~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+        host, port, clientId, timeout, readonly, account))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeff/Downloads/XAi/GIT/Clone/GITHUB/FORGE/venv/lib/python3.13/site-packages/ib_insync/ib.py", line 318, in _run
+    return util.run(*awaitables, timeout=self.RequestTimeout)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeff/Downloads/XAi/GIT/Clone/GITHUB/FORGE/venv/lib/python3.13/site-packages/ib_insync/util.py", line 309, in run
+    loop = getLoop()
+  File "/Users/jeff/Downloads/XAi/GIT/Clone/GITHUB/FORGE/venv/lib/python3.13/site-packages/ib_insync/util.py", line 464, in getLoop
+    return asyncio.get_event_loop_policy().get_event_loop()
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/asyncio/events.py", line 716, in get_event_loop
+    raise RuntimeError('There is no current event loop in thread %r.'
+                       % threading.current_thread().name)
+RuntimeError: There is no current event loop in thread 'AnyIO worker thread'.
+
+2026-05-04 07:06:20,619 | ERROR | IBKR Connection: There is no current event loop in thread 'AnyIO worker thread'.
+Traceback (most recent call last):
+  File "/Users/jeff/Downloads/XAi/GIT/Clone/GITHUB/FORGE/xforge_trader.py", line 143, in test_ibkr_connection
+    ib.connect(host, int(port), clientId=int(client_id), timeout=15, readonly=paper)
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeff/Downloads/XAi/GIT/Clone/GITHUB/FORGE/venv/lib/python3.13/site-packages/ib_insync/ib.py", line 279, in connect
+    return self._run(self.connectAsync(
+           ~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+        host, port, clientId, timeout, readonly, account))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeff/Downloads/XAi/GIT/Clone/GITHUB/FORGE/venv/lib/python3.13/site-packages/ib_insync/ib.py", line 318, in _run
+    return util.run(*awaitables, timeout=self.RequestTimeout)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeff/Downloads/XAi/GIT/Clone/GITHUB/FORGE/venv/lib/python3.13/site-packages/ib_insync/util.py", line 309, in run
+    loop = getLoop()
+  File "/Users/jeff/Downloads/XAi/GIT/Clone/GITHUB/FORGE/venv/lib/python3.13/site-packages/ib_insync/util.py", line 464, in getLoop
+    return asyncio.get_event_loop_policy().get_event_loop()
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/asyncio/events.py", line 716, in get_event_loop
+    raise RuntimeError('There is no current event loop in thread %r.'
+                       % threading.current_thread().name)
+RuntimeError: There is no current event loop in thread 'AnyIO worker thread'.
+
+2026-05-04 07:06:21,850 | ERROR | IBKR Connection: There is no current event loop in thread 'AnyIO worker thread'.
+Traceback (most recent call last):
+  File "/Users/jeff/Downloads/XAi/GIT/Clone/GITHUB/FORGE/xforge_trader.py", line 143, in test_ibkr_connection
+    ib.connect(host, int(port), clientId=int(client_id), timeout=15, readonly=paper)
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeff/Downloads/XAi/GIT/Clone/GITHUB/FORGE/venv/lib/python3.13/site-packages/ib_insync/ib.py", line 279, in connect
+    return self._run(self.connectAsync(
+           ~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+        host, port, clientId, timeout, readonly, account))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeff/Downloads/XAi/GIT/Clone/GITHUB/FORGE/venv/lib/python3.13/site-packages/ib_insync/ib.py", line 318, in _run
+    return util.run(*awaitables, timeout=self.RequestTimeout)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeff/Downloads/XAi/GIT/Clone/GITHUB/FORGE/venv/lib/python3.13/site-packages/ib_insync/util.py", line 309, in run
+    loop = getLoop()
+  File "/Users/jeff/Downloads/XAi/GIT/Clone/GITHUB/FORGE/venv/lib/python3.13/site-packages/ib_insync/util.py", line 464, in getLoop
+    return asyncio.get_event_loop_policy().get_event_loop()
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/asyncio/events.py", line 716, in get_event_loop
+    raise RuntimeError('There is no current event loop in thread %r.'
+                       % threading.current_thread().name)
+RuntimeError: There is no current event loop in thread 'AnyIO worker thread'.
+
+2026-05-04 07:06:24,368 | ERROR | IBKR Connection: There is no current event loop in thread 'AnyIO worker thread'.
+Traceback (most recent call last):
+  File "/Users/jeff/Downloads/XAi/GIT/Clone/GITHUB/FORGE/xforge_trader.py", line 143, in test_ibkr_connection
+    ib.connect(host, int(port), clientId=int(client_id), timeout=15, readonly=paper)
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeff/Downloads/XAi/GIT/Clone/GITHUB/FORGE/venv/lib/python3.13/site-packages/ib_insync/ib.py", line 279, in connect
+    return self._run(self.connectAsync(
+           ~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+        host, port, clientId, timeout, readonly, account))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeff/Downloads/XAi/GIT/Clone/GITHUB/FORGE/venv/lib/python3.13/site-packages/ib_insync/ib.py", line 318, in _run
+    return util.run(*awaitables, timeout=self.RequestTimeout)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeff/Downloads/XAi/GIT/Clone/GITHUB/FORGE/venv/lib/python3.13/site-packages/ib_insync/util.py", line 309, in run
+    loop = getLoop()
+  File "/Users/jeff/Downloads/XAi/GIT/Clone/GITHUB/FORGE/venv/lib/python3.13/site-packages/ib_insync/util.py", line 464, in getLoop
+    return asyncio.get_event_loop_policy().get_event_loop()
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/asyncio/events.py", line 716, in get_event_loop
+    raise RuntimeError('There is no current event loop in thread %r.'
+                       % threading.current_thread().name)
+RuntimeError: There is no current event loop in thread 'AnyIO worker thread'.
+
+2026-05-04 07:07:10,102 | ERROR | IBKR Connection: There is no current event loop in thread 'AnyIO worker thread'.
+Traceback (most recent call last):
+  File "/Users/jeff/Downloads/XAi/GIT/Clone/GITHUB/FORGE/xforge_trader.py", line 143, in test_ibkr_connection
+    ib.connect(host, int(port), clientId=int(client_id), timeout=15, readonly=paper)
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeff/Downloads/XAi/GIT/Clone/GITHUB/FORGE/venv/lib/python3.13/site-packages/ib_insync/ib.py", line 279, in connect
+    return self._run(self.connectAsync(
+           ~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+        host, port, clientId, timeout, readonly, account))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeff/Downloads/XAi/GIT/Clone/GITHUB/FORGE/venv/lib/python3.13/site-packages/ib_insync/ib.py", line 318, in _run
+    return util.run(*awaitables, timeout=self.RequestTimeout)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jeff/Downloads/XAi/GIT/Clone/GITHUB/FORGE/venv/lib/python3.13/site-packages/ib_insync/util.py", line 309, in run
+    loop = getLoop()
+  File "/Users/jeff/Downloads/XAi/GIT/Clone/GITHUB/FORGE/venv/lib/python3.13/site-packages/ib_insync/util.py", line 464, in getLoop
+    return asyncio.get_event_loop_policy().get_event_loop()
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/asyncio/events.py", line 716, in get_event_loop
+    raise RuntimeError('There is no current event loop in thread %r.'
+                       % threading.current_thread().name)
+RuntimeError: There is no current event loop in thread 'AnyIO worker thread'.
+
