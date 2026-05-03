@@ -1,8 +1,1 @@
-gradio
-pandas
-pandas-ta
-yfinance
-plotly
-ib_insync
-openai
-requests
+ib_insync eventkit yfinance pandas-ta plotly beautifulsoup4 requests numpy gradio openai tweepy
