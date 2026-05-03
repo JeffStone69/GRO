@@ -606,6 +606,12 @@ with gr.Blocks(title="xForgeTrader v10.1 – IBKR Dependency Fixed", theme=gr.th
         """)
 
     gr.Markdown("**V10.1 Complete** • Lazy IBKR import (no more startup crash) • All tabs restored • Educational use only.")
-
+# ====================== MODULAR SECTION: GRADIO LAUNCH (V10.1 – Public Share Option) ======================
 if __name__ == "__main__":
-    demo.launch(server_name="0.0.0.0", server_port=7860, share=False)
+    demo.launch(
+        server_name="0.0.0.0",
+        server_port=7860,
+        share=True,          # ← Set to True for public link; change back to False when no longer required
+        share_server_address=None,  # Optional: leave as None for default Gradio tunnel
+        auth=None            # Optional: add username/password tuple here if desired for extra protection
+    )
