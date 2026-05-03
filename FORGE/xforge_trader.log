@@ -242,3 +242,8 @@ ModuleNotFoundError: No module named 'eventkit'
 2026-05-04 06:46:52,528 | INFO | HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
 2026-05-04 06:47:40,218 | INFO | HTTP Request: HEAD https://huggingface.co/api/telemetry/https%3A/api.gradio.app/gradio-initiated-analytics "HTTP/1.1 200 OK"
 2026-05-04 06:47:40,718 | INFO | HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2026-05-04 06:55:31,099 | INFO | HTTP Request: HEAD https://huggingface.co/api/telemetry/https%3A/api.gradio.app/gradio-initiated-analytics "HTTP/1.1 200 OK"
+2026-05-04 06:55:31,341 | INFO | HTTP Request: GET http://localhost:7860/gradio_api/startup-events "HTTP/1.1 200 OK"
+2026-05-04 06:55:31,367 | INFO | HTTP Request: HEAD http://localhost:7860/ "HTTP/1.1 200 OK"
+2026-05-04 06:55:31,630 | INFO | HTTP Request: HEAD https://huggingface.co/api/telemetry/https%3A/api.gradio.app/gradio-launched-telemetry "HTTP/1.1 200 OK"
+2026-05-04 06:55:31,638 | INFO | HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
