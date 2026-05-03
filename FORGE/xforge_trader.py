@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 """
-XForge Trader v5.0 - Complete Replacement
-- yfinance PRIMARY for all data & analysis (IBKR deprioritized to LAST tab)
-- Momentum Scanner & Dashboard FIRST tab with TSLA default + enhanced rebound logic
-- TSLA is the default ticker in EVERY input across all tabs
-- Restored API key integration (X + Grok/OpenAI)
-- Enhanced Grok-style self-improve with LLM + improved DB accuracy (indexes + cache table)
+XForge Trader v6.0 - Complete Replacement
+- yfinance PRIMARY + DB cache for accuracy
+- Momentum Scanner & Dashboard is FIRST tab (TSLA default everywhere)
+- IBKR deprioritized to LAST tab ("Live Execution Only")
+- Date-range selection + Forward Walker added
+- Grok/OpenAI + X API key integration restored
+- Enhanced self-improve with DB accuracy (indexes + active ticker_cache)
 - Full backward compatibility with existing xforge_self_improve.db and logs
-- Production-grade: lru_cache for yfinance, error resilience, clean code
-- Inspired by https://github.com/cengizozel/Algorithmic-Trading-In-Python and https://github.com/shaadclt/Algorithmic-Trading-Python
+- Production-grade: lru_cache + DB cache, error resilience
 """
 
 import sys
@@ -16,8 +16,8 @@ import subprocess
 import logging
 import sqlite3
 import traceback
-import os
-from datetime import datetime
+import json
+from datetime import datetime, timedelta
 from functools import lru_cache
 import pandas as pd
 import pandas_ta as ta
@@ -30,7 +30,7 @@ from plotly.subplots import make_subplots
 import openai
 import tweepy
 
-# ==================== SETUP & LOGGING (Backward Compatible DB) ====================
+# ==================== SETUP & LOGGING (Backward Compatible) ====================
 logging.basicConfig(level=logging.INFO, filename="xforge_trader.log", filemode="a",
                     format="%(asctime)s | %(levelname)s | %(message)s")
 
@@ -43,7 +43,6 @@ def init_self_improve_db():
         id INTEGER PRIMARY KEY, timestamp TEXT, section TEXT, error TEXT, traceback TEXT)""")
     c.execute("""CREATE TABLE IF NOT EXISTS improvements (
         id INTEGER PRIMARY KEY, timestamp TEXT, suggestion TEXT)""")
-    # NEW: Improved DB accuracy with indexes + ticker cache table
     c.execute("""CREATE TABLE IF NOT EXISTS ticker_cache (
         ticker TEXT PRIMARY KEY, data_json TEXT, timestamp TEXT)""")
     c.execute("CREATE INDEX IF NOT EXISTS idx_errors_timestamp ON errors(timestamp)")
@@ -96,22 +95,47 @@ def check_and_install_all():
         return "\n".join([install_package(p) for p in missing])
     return "✅ All dependencies ready!"
 
-print("XForge Trader v5.0 starting... Checking dependencies...")
+print("XForge Trader v6.0 starting... Checking dependencies...")
 print(check_and_install_all())
 
-# ==================== CACHED YFINANCE (Performance + DB Accuracy) ====================
+# ==================== ENHANCED CACHED YFINANCE (DB + lru_cache for accuracy) ====================
 @lru_cache(maxsize=256)
-def cached_yf_download(ticker: str, period: str = "1y"):
-    """Cached yfinance download for speed and reduced API calls"""
+def cached_yf_download(ticker: str, period: str = "1y", start: str = None, end: str = None):
+    """DB-backed cache for accuracy + speed"""
+    conn = sqlite3.connect(DB_NAME)
+    c = conn.cursor()
+    cache_key = f"{ticker.upper()}_{period}_{start}_{end}"
+    c.execute("SELECT data_json, timestamp FROM ticker_cache WHERE ticker = ?", (cache_key,))
+    row = c.fetchone()
+    if row:
+        try:
+            data = pd.read_json(row[0])
+            if (datetime.now() - datetime.fromisoformat(row[1])).seconds < 300:  # 5-min cache
+                conn.close()
+                return data
+        except:
+            pass
+
     try:
-        return yf.download(ticker.upper(), period=period, progress=False)
+        if start and end:
+            data = yf.download(ticker.upper(), start=start, end=end, progress=False)
+        else:
+            data = yf.download(ticker.upper(), period=period, progress=False)
+        if not data.empty:
+            data_json = data.to_json(date_format='iso')
+            c.execute("INSERT OR REPLACE INTO ticker_cache (ticker, data_json, timestamp) VALUES (?, ?, ?)",
+                      (cache_key, data_json, datetime.now().isoformat()))
+            conn.commit()
+        conn.close()
+        return data
     except Exception:
+        conn.close()
         return pd.DataFrame()
 
-# ==================== MOMENTUM CALCULATOR (FIRST TAB - TSLA Default + Enhanced) ====================
+# ==================== MOMENTUM + FORWARD WALKER (FIRST TAB - TSLA Default) ====================
 DEFAULT_TICKERS = ["TSLA", "AAPL", "MSFT", "GOOGL", "AMZN", "NVDA", "META", "JPM", "V", "XOM", "UNH", "HD", "PG", "MA", "CVX"]
 
-def calculate_momentum(tickers_str: str = "", period: str = "1y"):
+def calculate_momentum(tickers_str: str = "", period: str = "1y", start_date: str = "", end_date: str = ""):
     if not tickers_str.strip():
         tickers = DEFAULT_TICKERS
     else:
@@ -120,7 +144,7 @@ def calculate_momentum(tickers_str: str = "", period: str = "1y"):
     results = []
     for ticker in tickers:
         try:
-            data = cached_yf_download(ticker, period)
+            data = cached_yf_download(ticker, period, start_date if start_date else None, end_date if end_date else None)
             if data.empty or len(data) < 20:
                 continue
             data = data.dropna()
@@ -133,7 +157,6 @@ def calculate_momentum(tickers_str: str = "", period: str = "1y"):
 
             momentum_score = (0.40 * ret_12m + 0.30 * ret_6m + 0.20 * ret_3m + 0.10 * ret_1m)
 
-            # Enhanced rebound logic with RSI + volume
             data.ta.rsi(append=True)
             rsi = data["RSI_14"].iloc[-1] if "RSI_14" in data.columns else 50
             high_volume = data["Volume"].iloc[-1] > data["Volume"].mean() if "Volume" in data.columns else False
@@ -141,6 +164,14 @@ def calculate_momentum(tickers_str: str = "", period: str = "1y"):
             rebound = "YES - Strong Rebound Candidate" if (
                 momentum_score > 10 and ret_1m < 0 and rsi < 40 and high_volume
             ) else "No"
+
+            # Forward Walker (simple linear projection for next 30 days)
+            if len(close) > 10:
+                slope = (close.iloc[-1] - close.iloc[-10]) / 10
+                forward_30d = close.iloc[-1] + slope * 30
+                forward_return = ((forward_30d / close.iloc[-1]) - 1) * 100
+            else:
+                forward_return = 0
 
             results.append({
                 "Ticker": ticker,
@@ -151,14 +182,15 @@ def calculate_momentum(tickers_str: str = "", period: str = "1y"):
                 "Momentum Score": round(momentum_score, 2),
                 "RSI(14)": round(rsi, 2),
                 "High Volume": "Yes" if high_volume else "No",
-                "Rebound Potential": rebound
+                "Rebound Potential": rebound,
+                "30-Day Forward Projection %": round(forward_return, 2)
             })
         except Exception as e:
             log_error("Momentum Calculator", str(e))
             continue
 
     if not results:
-        return pd.DataFrame(), None, "No valid data. Check internet or tickers."
+        return pd.DataFrame(), None, "No valid data. Check internet or dates."
 
     df = pd.DataFrame(results)
     df = df.sort_values("Momentum Score", ascending=False).head(15)
@@ -169,15 +201,15 @@ def calculate_momentum(tickers_str: str = "", period: str = "1y"):
         marker_color=["green" if "YES" in r else "orange" for r in df["Rebound Potential"]],
         text=df["Rebound Potential"]
     ))
-    fig.update_layout(title="Top Rebound Potential Stocks (TSLA prioritized)", height=450)
+    fig.update_layout(title="Top Rebound Potential Stocks (TSLA prioritized) + Forward Projection", height=450)
 
-    summary = f"Scanned {len(tickers)} tickers. TSLA is always included in default list. Green = strong rebound."
+    summary = f"Scanned {len(tickers)} tickers. TSLA always included. Green = strong rebound. 30-day projection uses recent slope."
     return df, fig, summary
 
-# ==================== TECHNICAL ANALYSIS (TSLA Default) ====================
-def technical_analysis(ticker: str = "TSLA", period: str = "1y"):
+# ==================== TECHNICAL ANALYSIS (TSLA Default + Date Range) ====================
+def technical_analysis(ticker: str = "TSLA", period: str = "1y", start_date: str = "", end_date: str = ""):
     try:
-        data = cached_yf_download(ticker, period)
+        data = cached_yf_download(ticker, period, start_date if start_date else None, end_date if end_date else None)
         if data.empty:
             return "No data found", None, None
         data.ta.rsi(append=True)
@@ -199,7 +231,7 @@ def technical_analysis(ticker: str = "TSLA", period: str = "1y"):
         log_error("Technical Analysis", str(e))
         return str(e), None, None
 
-# ==================== NEWS & SENTIMENT (API Keys Restored) ====================
+# ==================== NEWS & SENTIMENT (API Keys) ====================
 def get_news(ticker: str = "TSLA"):
     try:
         url = f"https://finance.yahoo.com/quote/{ticker.upper()}/news"
@@ -222,9 +254,9 @@ def get_x_sentiment(ticker: str = "TSLA", x_api_key: str = ""):
         except Exception as e:
             log_error("X Sentiment", str(e))
             return "X API error - check keys"
-    return f"Simulated X Sentiment for {ticker}: 68% Bullish (enter X Bearer Token in Settings for live data)"
+    return f"Simulated X Sentiment for {ticker}: 68% Bullish (enter X Bearer Token in Settings)"
 
-# ==================== BACKTEST & RISK ====================
+# ==================== BACKTEST & RISK (TSLA Default) ====================
 def backtest_strategy(ticker: str = "TSLA", strategy: str = "SMA Crossover"):
     try:
         data = cached_yf_download(ticker, "2y")
@@ -289,7 +321,7 @@ def get_ibkr_portfolio(paper: bool = True):
         log_error("IBKR Portfolio", str(e))
         return f"Error: {str(e)}"
 
-# ==================== GROK-STYLE SELF-IMPROVE (Enhanced + DB Accuracy) ====================
+# ==================== GROK-STYLE SELF-IMPROVE (Enhanced) ====================
 def get_grok_suggestions(api_key: str = ""):
     logs = get_error_logs()
     if logs.empty:
@@ -322,45 +354,52 @@ def analyze_improvements():
     return "Use the Grok Key field below for real LLM suggestions, then click the button."
 
 # ==================== GRADIO UI (Momentum FIRST, IBKR LAST, TSLA Defaults) ====================
-with gr.Blocks(title="XForge Trader v5.0", theme=gr.themes.Soft()) as demo:
-    gr.Markdown("# 🚀 XForge Trader v5.0 — yfinance Primary | TSLA Default Everywhere | Momentum Scanner First")
+with gr.Blocks(title="XForge Trader v6.0", theme=gr.themes.Soft()) as demo:
+    gr.Markdown("# 🚀 XForge Trader v6.0 — yfinance Primary + DB Cache | TSLA Default | Momentum First | Grok Self-Improve")
 
-    # ========== FIRST TAB: MOMENTUM SCANNER (TSLA Default) ==========
+    # ========== FIRST TAB: MOMENTUM SCANNER + FORWARD WALKER ==========
     with gr.Tab("Momentum Scanner & Dashboard"):
-        gr.Markdown("### Top Rebound Potential Stocks (TSLA always included in default list)")
-        gr.Markdown("Leave blank for full S&P 500 leader scan or enter comma-separated tickers. Enhanced with RSI + volume rebound logic.")
-        tickers_input = gr.Textbox("TSLA", label="Tickers (comma separated or leave for full list)", placeholder="TSLA,AAPL,MSFT,...")
-        scan_btn = gr.Button("Scan Top Rebound Stocks", variant="primary")
+        gr.Markdown("### Top Rebound Potential Stocks (TSLA always default)")
+        gr.Markdown("Leave tickers blank for full scan. Use date range for historical accuracy. Includes 30-day forward projection.")
+        tickers_input = gr.Textbox("TSLA", label="Tickers (comma separated or leave for full list)")
+        with gr.Row():
+            start_date = gr.Textbox("", label="Start Date (YYYY-MM-DD, optional)")
+            end_date = gr.Textbox("", label="End Date (YYYY-MM-DD, optional)")
+        scan_btn = gr.Button("Scan Top Rebound Stocks + Forward Walker", variant="primary")
         momentum_df = gr.Dataframe(label="Top Rebound Stocks (sorted by Momentum Score)")
         momentum_chart = gr.Plot(label="Momentum Score Chart")
         momentum_summary = gr.Textbox(label="Summary")
-        scan_btn.click(calculate_momentum, tickers_input, [momentum_df, momentum_chart, momentum_summary])
+        scan_btn.click(calculate_momentum, [tickers_input, gr.Textbox("1y", visible=False), start_date, end_date], 
+                       [momentum_df, momentum_chart, momentum_summary])
 
-    # ========== TECHNICAL ANALYSIS (TSLA Default) ==========
+    # ========== TECHNICAL ANALYSIS (TSLA Default + Date Range) ==========
     with gr.Tab("Technical Analysis"):
         ta_ticker = gr.Textbox("TSLA", label="Ticker")
+        with gr.Row():
+            ta_start = gr.Textbox("", label="Start Date (YYYY-MM-DD)")
+            ta_end = gr.Textbox("", label="End Date (YYYY-MM-DD)")
         ta_period = gr.Dropdown(["1mo", "3mo", "6mo", "1y", "2y"], value="1y")
         ta_btn = gr.Button("Run Analysis + Chart")
         ta_summary = gr.Textbox(label="Summary")
         ta_table = gr.Dataframe(label="Recent Data")
         ta_chart = gr.Plot(label="Chart")
-        ta_btn.click(technical_analysis, [ta_ticker, ta_period], [ta_summary, ta_table, ta_chart])
+        ta_btn.click(technical_analysis, [ta_ticker, ta_period, ta_start, ta_end], [ta_summary, ta_table, ta_chart])
 
-    # ========== NEWS & SENTIMENT (TSLA Default) ==========
+    # ========== NEWS & SENTIMENT ==========
     with gr.Tab("News & Sentiment"):
         news_ticker = gr.Textbox("TSLA", label="Ticker")
         news_btn = gr.Button("Fetch News")
         news_out = gr.Textbox(label="Latest News", lines=8)
         news_btn.click(get_news, news_ticker, news_out)
 
-        gr.Markdown("### X/Twitter Sentiment (API Key Required for Live)")
+        gr.Markdown("### X/Twitter Sentiment")
         x_ticker = gr.Textbox("TSLA", label="Ticker")
         x_key = gr.Textbox(label="X Bearer Token (optional)")
         x_btn = gr.Button("Analyze X Sentiment")
         x_out = gr.Textbox(label="X Sentiment")
         x_btn.click(get_x_sentiment, [x_ticker, x_key], x_out)
 
-    # ========== BACKTEST & RISK (TSLA Default) ==========
+    # ========== BACKTEST & RISK ==========
     with gr.Tab("Backtesting & Risk"):
         bt_ticker = gr.Textbox("TSLA", label="Ticker")
         bt_strategy = gr.Dropdown(["SMA Crossover", "RSI Mean Reversion", "MACD"], label="Strategy")
@@ -378,9 +417,9 @@ with gr.Blocks(title="XForge Trader v5.0", theme=gr.themes.Soft()) as demo:
         risk_out = gr.Textbox(label="Recommendation")
         risk_btn.click(risk_calculator, [pos_size, entry, sl, risk], risk_out)
 
-    # ========== SELF-IMPROVE (Grok + Improved DB) ==========
+    # ========== SELF-IMPROVE ==========
     with gr.Tab("Self-Improve & Logs"):
-        gr.Markdown("### Grok-Powered Improvement Engine (enter key below for real LLM suggestions)")
+        gr.Markdown("### Grok-Powered Improvement Engine")
         grok_key_input = gr.Textbox(label="Grok or OpenAI API Key (optional for LLM)", placeholder="sk-...")
         refresh_logs = gr.Button("Refresh Error Logs")
         logs_df = gr.Dataframe(label="Recent Errors")
@@ -395,7 +434,7 @@ with gr.Blocks(title="XForge Trader v5.0", theme=gr.themes.Soft()) as demo:
         history_btn = gr.Button("Load History")
         history_btn.click(get_improvement_suggestions, None, history_df)
 
-    # ========== IBKR (DEPRIORITIZED - LAST TAB) ==========
+    # ========== IBKR (LAST TAB - DEPRIORITIZED) ==========
     with gr.Tab("IBKR Live Trading (Optional - Deprioritized)"):
         gr.Markdown("⚠️ **IBKR is for live/paper execution only.** All data and analysis use yfinance. TSLA is default symbol.")
         with gr.Row():
@@ -437,6 +476,6 @@ with gr.Blocks(title="XForge Trader v5.0", theme=gr.themes.Soft()) as demo:
 
         gr.Markdown("**Updated requirements.txt:**\n`ib_insync eventkit yfinance pandas-ta plotly beautifulsoup4 requests numpy gradio openai tweepy`")
 
-    gr.Markdown("**XForge Trader v5.0** — TSLA default everywhere, Momentum first, IBKR last, yfinance primary, Grok self-improve restored, DB optimized. Clean first-run ready.")
+    gr.Markdown("**XForge Trader v6.0** — TSLA default everywhere, Momentum + Forward Walker first, IBKR last, yfinance + DB cache, Grok self-improve restored. Clean first-run ready.")
 
 demo.launch(server_name="0.0.0.0", server_port=7860, share=False, inbrowser=True)
