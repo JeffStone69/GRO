@@ -489,3 +489,5 @@ RuntimeError: There is no current event loop in thread 'AnyIO worker thread'.
 
 2026-05-04 07:10:13,823 | ERROR | IBKR Portfolio: There is no current event loop in thread 'AnyIO worker thread'.
 
+2026-05-04 07:28:34,458 | INFO | HTTP Request: HEAD https://huggingface.co/api/telemetry/https%3A/api.gradio.app/gradio-initiated-analytics "HTTP/1.1 200 OK"
+2026-05-04 07:28:35,020 | INFO | HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
