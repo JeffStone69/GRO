@@ -1,8 +1,0 @@
-gradio
-pandas
-pandas-ta
-yfinance
-plotly
-ib_insync
-openai
-requests
