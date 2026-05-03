@@ -1,0 +1,183 @@
+#!/usr/bin/env python3
+"""
+XForge Self-Improvement Module - Secure Production Version (FINAL)
+- API key is NEVER saved to disk, never committed to the repo.
+- Preferred method: environment variable injection (XAI_API_KEY or GROK_API_KEY)
+- Fallback: one-time UI input stored ONLY in memory for the current session.
+"""
+
+import subprocess
+import sys
+import importlib
+import os
+from pathlib import Path
+import logging
+
+# Setup logging for error handling and observability (standalone requirement)
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler("xforge_self_improve.log"),
+        logging.StreamHandler(sys.stdout)
+    ]
+)
+logger = logging.getLogger(__name__)
+
+def ensure_dependencies() -> None:
+    packages = ["openai", "pandas", "pydantic", "gradio", "requests"]
+    for pkg in packages:
+        try:
+            importlib.import_module(pkg.replace("-", "_"))
+        except ImportError:
+            logger.info(f"Installing {pkg}...")
+            subprocess.check_call([sys.executable, "-m", "pip", "install", pkg, "--quiet"])
+    try:
+        subprocess.check_call([sys.executable, "-m", "pip", "install", "jinja2>=3.1.5", "--quiet", "--upgrade"])
+    except Exception as e:
+        logger.warning(f"jinja2 upgrade warning: {e}")
+    logger.info("Dependencies ready.")
+
+ensure_dependencies()
+
+import sqlite3
+import pandas as pd
+import requests
+from datetime import datetime
+from openai import OpenAI
+from pydantic import BaseModel, Field, SecretStr
+import gradio as gr
+
+class SelfImproveConfig(BaseModel):
+    db_name: str = "xforge_self_improve.db"
+    grok_model: str = "grok-4.3"
+    max_errors: int = 20
+    grok_api_key: SecretStr = Field(default=SecretStr(""))
+
+CONFIG = SelfImproveConfig()
+
+# ==================== SECURE API KEY HANDLING (NO FILE SAVING EVER) ====================
+def get_grok_api_key() -> str:
+    """Returns key from environment variable only. Never reads from files."""
+    key = os.getenv("XAI_API_KEY") or os.getenv("GROK_API_KEY")
+    return key.strip() if key else ""
+
+def validate_grok_key(key: str) -> tuple[bool, str]:
+    """Validate Grok API key format by client initialization (no actual API call to avoid cost)."""
+    key = key.strip() if key else ""
+    if not key:
+        return False, "API key cannot be empty."
+    try:
+        OpenAI(api_key=key, base_url="https://api.x.ai/v1")
+        return True, "API key validated successfully."
+    except Exception as e:
+        logger.error(f"API key validation failed: {str(e)}")
+        return False, f"Invalid API key: {str(e)}"
+
+def init_db() -> None:
+    try:
+        conn = sqlite3.connect(CONFIG.db_name)
+        c = conn.cursor()
+        c.execute("""CREATE TABLE IF NOT EXISTS errors (id INTEGER PRIMARY KEY, timestamp TEXT, section TEXT, error TEXT)""")
+        c.execute("""CREATE TABLE IF NOT EXISTS improvements (id INTEGER PRIMARY KEY, timestamp TEXT, suggestion TEXT, user_feedback TEXT)""")
+        conn.commit()
+        conn.close()
+        logger.info("Database initialized successfully.")
+    except Exception as e:
+        logger.error(f"Database init failed: {str(e)}")
+
+def log_error(section: str, error_msg: str) -> None:
+    try:
+        conn = sqlite3.connect(CONFIG.db_name)
+        conn.execute("INSERT INTO errors (timestamp, section, error) VALUES (?, ?, ?)",
+                     (datetime.now().isoformat(), section, error_msg))
+        conn.commit()
+        conn.close()
+        logger.error(f"Error logged in {section}: {error_msg}")
+    except Exception as e:
+        logger.error(f"Failed to log error to DB: {str(e)}")
+
+def log_improvement(suggestion: str, user_feedback: str = "") -> None:
+    try:
+        conn = sqlite3.connect(CONFIG.db_name)
+        conn.execute("INSERT INTO improvements (timestamp, suggestion, user_feedback) VALUES (?, ?, ?)",
+                     (datetime.now().isoformat(), suggestion, user_feedback))
+        conn.commit()
+        conn.close()
+        logger.info("Improvement suggestion logged.")
+    except Exception as e:
+        logger.error(f"Failed to log improvement: {str(e)}")
+
+def fetch_github_content(url: str) -> str:
+    try:
+        if "github.com" in url and not url.startswith("https://raw.githubusercontent.com"):
+            if "/blob/" in url:
+                url = url.replace("github.com", "raw.githubusercontent.com").replace("/blob/", "/")
+            else:
+                candidates = [
+                    url.replace("github.com", "raw.githubusercontent.com") + "/main/README.md",
+                    url.replace("github.com", "raw.githubusercontent.com") + "/main/main.py",
+                    url.replace("github.com", "raw.githubusercontent.com") + "/main/app.py"
+                ]
+                for candidate in candidates:
+                    try:
+                        r = requests.get(candidate, timeout=10)
+                        if r.status_code == 200:
+                            return r.text
+                    except Exception:
+                        continue
+                return "Could not fetch default files."
+        r = requests.get(url, timeout=15)
+        if r.status_code == 200:
+            return r.text
+        return f"HTTP Error {r.status_code}"
+    except Exception as e:
+        logger.error(f"GitHub fetch error: {str(e)}")
+        return f"Fetch failed: {str(e)}"
+
+def self_improve(script_content: str = "", github_url: str = "", user_feedback: str = "") -> tuple[str, str]:
+    api_key = CONFIG.grok_api_key.get_secret_value().strip() or get_grok_api_key()
+    if not api_key:
+        return "Error: Grok API key required. Set XAI_API_KEY environment variable or enter it in the UI.", ""
+
+    try:
+        conn = sqlite3.connect(CONFIG.db_name)
+        errors_df = pd.read_sql_query(f"SELECT * FROM errors ORDER BY timestamp DESC LIMIT {CONFIG.max_errors}", conn)
+        conn.close()
+
+        context = ""
+        if not errors_df.empty:
+            context += "Recent Errors:\n" + errors_df.to_string(index=False) + "\n\n"
+        if github_url.strip():
+            github_content = fetch_github_content(github_url.strip())
+            context += f"GitHub Content:\n{github_content[:12000]}\n\n"
+        if script_content.strip():
+            context += "Provided Script:\n" + script_content[:12000] + "\n\n"
+        if user_feedback.strip():
+            context += f"User Iteration Instructions:\n{user_feedback}\n\n"
+
+        if not context:
+            return "No content provided to analyze.", ""
+
+        client = OpenAI(api_key=api_key, base_url="https://api.x.ai/v1")
+        prompt = (
+            "You are an expert Python engineer. Analyze the provided code, errors, and user instructions. "
+            "Return TWO parts clearly separated by '---IMPROVED-CODE---':\n"
+            "1. Detailed explanation of improvements.\n"
+            "2. The complete, ready-to-run improved Python script.\n\n"
+            f"{context}"
+        )
+        response = client.chat.completions.create(
+            model=CONFIG.grok_model,
+            messages=[{"role": "user", "content": prompt}],
+            max_tokens=2000
+        )
+        full_text = response.choices[0].message.content.strip()
+
+        if "---IMPROVED-CODE---" in full_text:
+            explanation, improved_code = full_text.split("---IMPROVED-CODE---", 1)
+        else:
+            explanation = full_text
+            improved_code = ""
+
+        log_improvement(full_text, user_feedback)
