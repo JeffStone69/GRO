@@ -1,5 +1,5 @@
 # ============================================================
-# xforge_trader_v10.1.py  —  xForgeTrader V10.1 (Fully Corrected)
+# xforge_trader.py  —  xForgeTrader
 # Complete Self-Improving Profit Recommendation Engine
 # Modular | Robust | Grok-Powered | Never Fails
 # ============================================================
@@ -15,7 +15,6 @@ import warnings
 from pathlib import Path
 import sqlite3
 import time
-import random
 
 warnings.filterwarnings('ignore')
 
@@ -33,10 +32,8 @@ CACHE_DIR = Path("data_cache")
 CACHE_DIR.mkdir(exist_ok=True)
 HISTORY_FILE = Path("DEVELOPMENT_HISTORY.md")
 
-RECOMMENDED_MOMENTUM = ["TSLA", "AAPL", "NVDA", "AMD", "SMCI", "META", "AVGO", "MSFT", "GOOGL", "AMZN", "QQQ", "SPY"]
-
 # ============================================================
-# MODULAR SECTION 2: IBKR INTEGRATION (Lazy Import - V10.1)
+# MODULAR SECTION 2: IBKR INTEGRATION (Lazy Import)
 # ============================================================
 IBKR_AVAILABLE = False
 
@@ -73,7 +70,7 @@ def test_ibkr_connection(host, port, client_id):
     return msg
 
 def fetch_and_update_stock_data(host, port, client_id, tickers_str):
-    """IBKR update function (added to fix undefined reference)"""
+    """IBKR update function"""
     tickers = [t.strip().upper() for t in tickers_str.split(',') if t.strip()]
     if not tickers:
         return "No tickers provided"
@@ -81,10 +78,9 @@ def fetch_and_update_stock_data(host, port, client_id, tickers_str):
     if ib is None:
         return f"IBKR connection failed: {msg}"
     try:
-        for ticker in tickers[:10]:   # limit for safety
+        for ticker in tickers[:10]:
             contract = Stock(ticker, "SMART", "USD")
             ib.qualifyContracts(contract)
-            # In real use you would request market data here
             log_error("IBKR", ticker, "Successfully qualified contract")
         ib.disconnect()
         return f"✅ Updated {len(tickers)} tickers from IBKR (demo mode active)"
@@ -273,7 +269,7 @@ def forward_walk_predictor(ticker, demo_mode=True):
     return f"**Walk-Forward**\nTrain Return: {train_metrics.get('Total Return %')}%\nForward Return: {test_metrics.get('Total Return %')}%"
 
 # ============================================================
-# MODULAR SECTION 7: SCANNER (V10+ Enhanced)
+# MODULAR SECTION 7: SCANNER
 # ============================================================
 def scan_tickers(tickers_str, capital, risk_pct, start_date, end_date, realtime, demo_mode):
     tickers = [t.strip().upper() for t in tickers_str.split(',') if t.strip()]
@@ -364,7 +360,7 @@ def self_improve(api_key, user_note):
         return "Valid xAI API key required"
     errors = get_recent_errors()
     prompt = f"""You are an expert Python/Gradio trading app developer.
-Recent errors in xForgeTrader V10.1:
+Recent errors in xForgeTrader:
 {errors}
 User note: {user_note}
 
@@ -380,10 +376,10 @@ Provide specific, actionable code changes, refactors, or new features to fix the
         return f"Self-improve error: {str(e)[:150]}"
 
 # ============================================================
-# MODULAR SECTION 9: FULL GRADIO UI (V10.1 - SYNTAX SAFE)
+# MODULAR SECTION 9: FULL GRADIO UI
 # ============================================================
-with gr.Blocks(title="xForgeTrader V10.1", theme=gr.themes.Soft()) as app:
-    gr.Markdown("# xForgeTrader V10.1 — Profit Recommendation Engine")
+with gr.Blocks(title="xForgeTrader", theme=gr.themes.Soft()) as app:
+    gr.Markdown("# xForgeTrader — Profit Recommendation Engine")
     gr.Markdown("**Never fails • Self-improving • Grok-powered • Demo ready**")
 
     with gr.Tab("Scanner"):
@@ -463,7 +459,7 @@ with gr.Blocks(title="xForgeTrader V10.1", theme=gr.themes.Soft()) as app:
             outputs=plan_out
         )
 
-    with gr.Tab("Self-Improve (V10+)"):
+    with gr.Tab("Self-Improve"):
         si_api_key = gr.Textbox(label="xAI API Key", type="password")
         si_note = gr.Textbox("Add new ML model and improve position sizing", label="User Note / Focus Area")
         si_btn = gr.Button("Run Self-Improvement (Grok)")
@@ -483,7 +479,7 @@ with gr.Blocks(title="xForgeTrader V10.1", theme=gr.themes.Soft()) as app:
             outputs=clear_status
         )
 
-    gr.Markdown("V10.1 • Modular architecture • Error-driven self-improvement • Demo always works")
+    gr.Markdown("Modular architecture • Error-driven self-improvement • Demo always works")
 
 # Launch
 if __name__ == "__main__":
