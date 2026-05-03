@@ -15,6 +15,7 @@ import warnings
 from pathlib import Path
 import sqlite3
 import time
+import shutil
 
 warnings.filterwarnings('ignore')
 
@@ -70,7 +71,6 @@ def test_ibkr_connection(host, port, client_id):
     return msg
 
 def fetch_and_update_stock_data(host, port, client_id, tickers_str):
-    """IBKR update function"""
     tickers = [t.strip().upper() for t in tickers_str.split(',') if t.strip()]
     if not tickers:
         return "No tickers provided"
@@ -90,7 +90,7 @@ def fetch_and_update_stock_data(host, port, client_id, tickers_str):
         return f"IBKR update error: {str(e)[:80]}"
 
 # ============================================================
-# MODULAR SECTION 3: DATABASE + SELF-IMPROVEMENT
+# MODULAR SECTION 3: DATABASE + SELF-IMPROVEMENT + BACKUP
 # ============================================================
 def init_db():
     conn = sqlite3.connect(DB_PATH)
@@ -145,6 +145,28 @@ def log_grok_improvement(suggestion):
     conn.commit()
     conn.close()
     append_to_history(f"**Grok Suggestion:**\n{suggestion[:400]}")
+
+# NEW: Backup function for fresh-start process
+def backup_everything():
+    backup_dir = Path("backups")
+    backup_dir.mkdir(exist_ok=True)
+    ts = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    backup_subdir = backup_dir / ts
+    backup_subdir.mkdir()
+    
+    files_to_backup = [
+        Path("xforge_trader.py"),
+        DB_PATH,
+        HISTORY_FILE
+    ]
+    copied = []
+    for f in files_to_backup:
+        if f.exists():
+            dest = backup_subdir / f.name
+            shutil.copy2(f, dest)
+            copied.append(f.name)
+    
+    return f"✅ Backup created successfully!\nLocation: {backup_subdir}\nFiles copied: {', '.join(copied)}\n\nYou can now safely erase the entire folder."
 
 # ============================================================
 # MODULAR SECTION 4: DATA LAYER (Demo + Real + Fallbacks)
@@ -233,7 +255,7 @@ def run_backtest(ticker, start_date, end_date, strategy="Rebound Dip", demo_mode
         df['peak'] = df['Close'].cummax()
         df['dip'] = (df['Close'] - df['peak']) / df['peak']
         df['signal'] = (df['dip'] <= -0.07).astype(int)
-    else:  # MA Crossover
+    else:
         df['short_ma'] = df['Close'].rolling(50).mean()
         df['long_ma'] = df['Close'].rolling(200).mean()
         df['signal'] = (df['short_ma'] > df['long_ma']).astype(int)
@@ -471,6 +493,16 @@ with gr.Blocks(title="xForgeTrader", theme=gr.themes.Soft()) as app:
             outputs=si_out
         )
 
+        # NEW BACKUP SECTION (ready for folder erase)
+        gr.Markdown("---")
+        gr.Markdown("**🛡️ Backup Before Erasing Folder**")
+        backup_btn = gr.Button("Backup Current State (Recommended before erasing folder)", variant="secondary")
+        backup_status = gr.Textbox(label="Backup Status", lines=4)
+        backup_btn.click(
+            fn=backup_everything,
+            outputs=backup_status
+        )
+
     with gr.Tab("Utilities"):
         clear_btn = gr.Button("Clear Cache")
         clear_status = gr.Textbox()
@@ -479,7 +511,7 @@ with gr.Blocks(title="xForgeTrader", theme=gr.themes.Soft()) as app:
             outputs=clear_status
         )
 
-    gr.Markdown("Modular architecture • Error-driven self-improvement • Demo always works")
+    gr.Markdown("Modular architecture • Error-driven self-improvement • Demo always works • Backup ready")
 
 # Launch
 if __name__ == "__main__":
