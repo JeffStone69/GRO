@@ -175,3 +175,66 @@ Traceback (most recent call last):
     )
 AttributeError: Can only use .str accessor with Index, not MultiIndex
 
+2026-05-04 06:18:43,760 | INFO | HTTP Request: HEAD https://huggingface.co/api/telemetry/https%3A/api.gradio.app/gradio-initiated-analytics "HTTP/1.1 200 OK"
+2026-05-04 06:18:44,170 | INFO | HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2026-05-04 06:18:44,260 | INFO | HTTP Request: GET http://localhost:7860/gradio_api/startup-events "HTTP/1.1 200 OK"
+2026-05-04 06:18:44,287 | INFO | HTTP Request: HEAD http://localhost:7860/ "HTTP/1.1 200 OK"
+2026-05-04 06:18:44,650 | INFO | HTTP Request: HEAD https://huggingface.co/api/telemetry/https%3A/api.gradio.app/gradio-launched-telemetry "HTTP/1.1 200 OK"
+2026-05-04 06:19:20,047 | ERROR | IBKR Connection: No module named 'eventkit'
+Traceback (most recent call last):
+  File "/Users/jeff/Downloads/XAi/GIT/Clone/GITHUB/FORGE/xforge_trader.py", line 166, in test_ibkr_connection
+    from ib_insync import IB
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/ib_insync/__init__.py", line 6, in <module>
+    from eventkit import Event
+ModuleNotFoundError: No module named 'eventkit'
+
+2026-05-04 06:20:04,879 | ERROR | Backtest: Can only use .str accessor with Index, not MultiIndex
+
+2026-05-04 06:20:12,022 | ERROR | Backtest: Can only use .str accessor with Index, not MultiIndex
+
+2026-05-04 06:20:17,335 | ERROR | Backtest: Can only use .str accessor with Index, not MultiIndex
+
+2026-05-04 06:20:28,998 | ERROR | Backtest: Can only use .str accessor with Index, not MultiIndex
+
+2026-05-04 06:20:44,070 | ERROR | Backtest: Can only use .str accessor with Index, not MultiIndex
+
+2026-05-04 06:22:06,700 | ERROR | IBKR Connection: No module named 'eventkit'
+Traceback (most recent call last):
+  File "/Users/jeff/Downloads/XAi/GIT/Clone/GITHUB/FORGE/xforge_trader.py", line 166, in test_ibkr_connection
+    from ib_insync import IB
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/ib_insync/__init__.py", line 6, in <module>
+    from eventkit import Event
+ModuleNotFoundError: No module named 'eventkit'
+
+2026-05-04 06:22:15,979 | ERROR | IBKR Connection: No module named 'eventkit'
+Traceback (most recent call last):
+  File "/Users/jeff/Downloads/XAi/GIT/Clone/GITHUB/FORGE/xforge_trader.py", line 166, in test_ibkr_connection
+    from ib_insync import IB
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/ib_insync/__init__.py", line 6, in <module>
+    from eventkit import Event
+ModuleNotFoundError: No module named 'eventkit'
+
+2026-05-04 06:22:18,429 | ERROR | IBKR Connection: No module named 'eventkit'
+Traceback (most recent call last):
+  File "/Users/jeff/Downloads/XAi/GIT/Clone/GITHUB/FORGE/xforge_trader.py", line 166, in test_ibkr_connection
+    from ib_insync import IB
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/ib_insync/__init__.py", line 6, in <module>
+    from eventkit import Event
+ModuleNotFoundError: No module named 'eventkit'
+
+2026-05-04 06:22:25,115 | ERROR | IBKR Connection: No module named 'eventkit'
+Traceback (most recent call last):
+  File "/Users/jeff/Downloads/XAi/GIT/Clone/GITHUB/FORGE/xforge_trader.py", line 166, in test_ibkr_connection
+    from ib_insync import IB
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/ib_insync/__init__.py", line 6, in <module>
+    from eventkit import Event
+ModuleNotFoundError: No module named 'eventkit'
+
+2026-05-04 06:22:35,623 | ERROR | IBKR Connection: No module named 'eventkit'
+Traceback (most recent call last):
+  File "/Users/jeff/Downloads/XAi/GIT/Clone/GITHUB/FORGE/xforge_trader.py", line 166, in test_ibkr_connection
+    from ib_insync import IB
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/ib_insync/__init__.py", line 6, in <module>
+    from eventkit import Event
+ModuleNotFoundError: No module named 'eventkit'
+
