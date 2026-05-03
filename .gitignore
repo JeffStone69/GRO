@@ -1,5 +1,10 @@
-FORGE/.DS_Store
+# macOS
 .DS_Store
-.DS_Store
-.DS_Store
-.DS_Store
+*.DS_Store
+# Secrets & config (NEVER commit these)
+xforge_config.json
+*.json
+*.env
+*api_key*
+*secret*
+*key*
