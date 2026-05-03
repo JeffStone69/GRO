@@ -1,0 +1,177 @@
+2026-05-04 06:04:37,158 | INFO | HTTP Request: HEAD https://huggingface.co/api/telemetry/https%3A/api.gradio.app/gradio-initiated-analytics "HTTP/1.1 200 OK"
+2026-05-04 06:04:37,658 | INFO | HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2026-05-04 06:04:38,086 | INFO | HTTP Request: GET http://localhost:7860/gradio_api/startup-events "HTTP/1.1 200 OK"
+2026-05-04 06:04:38,113 | INFO | HTTP Request: HEAD http://localhost:7860/ "HTTP/1.1 200 OK"
+2026-05-04 06:04:38,513 | INFO | HTTP Request: HEAD https://huggingface.co/api/telemetry/https%3A/api.gradio.app/gradio-launched-telemetry "HTTP/1.1 200 OK"
+2026-05-04 06:05:44,443 | ERROR | IBKR Connection: No module named 'eventkit'
+Traceback (most recent call last):
+  File "/Users/jeff/Downloads/XAi/GIT/Clone/GITHUB/FORGE/xforge_trader.py", line 111, in test_ibkr_connection
+    from ib_insync import IB  # lazy import fixes eventkit issue
+    ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/ib_insync/__init__.py", line 6, in <module>
+    from eventkit import Event
+ModuleNotFoundError: No module named 'eventkit'
+
+2026-05-04 06:05:49,047 | ERROR | IBKR Connection: No module named 'eventkit'
+Traceback (most recent call last):
+  File "/Users/jeff/Downloads/XAi/GIT/Clone/GITHUB/FORGE/xforge_trader.py", line 111, in test_ibkr_connection
+    from ib_insync import IB  # lazy import fixes eventkit issue
+    ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/ib_insync/__init__.py", line 6, in <module>
+    from eventkit import Event
+ModuleNotFoundError: No module named 'eventkit'
+
+2026-05-04 06:05:58,504 | ERROR | IBKR Portfolio: No module named 'eventkit'
+
+2026-05-04 06:06:00,962 | ERROR | IBKR Order: No module named 'eventkit'
+Traceback (most recent call last):
+  File "/Users/jeff/Downloads/XAi/GIT/Clone/GITHUB/FORGE/xforge_trader.py", line 125, in place_order
+    from ib_insync import IB, Stock, MarketOrder, LimitOrder
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/ib_insync/__init__.py", line 6, in <module>
+    from eventkit import Event
+ModuleNotFoundError: No module named 'eventkit'
+
+2026-05-04 06:06:03,120 | ERROR | IBKR Connection: No module named 'eventkit'
+Traceback (most recent call last):
+  File "/Users/jeff/Downloads/XAi/GIT/Clone/GITHUB/FORGE/xforge_trader.py", line 111, in test_ibkr_connection
+    from ib_insync import IB  # lazy import fixes eventkit issue
+    ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/ib_insync/__init__.py", line 6, in <module>
+    from eventkit import Event
+ModuleNotFoundError: No module named 'eventkit'
+
+2026-05-04 06:06:11,399 | ERROR | IBKR Connection: No module named 'eventkit'
+Traceback (most recent call last):
+  File "/Users/jeff/Downloads/XAi/GIT/Clone/GITHUB/FORGE/xforge_trader.py", line 111, in test_ibkr_connection
+    from ib_insync import IB  # lazy import fixes eventkit issue
+    ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/ib_insync/__init__.py", line 6, in <module>
+    from eventkit import Event
+ModuleNotFoundError: No module named 'eventkit'
+
+2026-05-04 06:06:13,016 | ERROR | IBKR Connection: No module named 'eventkit'
+Traceback (most recent call last):
+  File "/Users/jeff/Downloads/XAi/GIT/Clone/GITHUB/FORGE/xforge_trader.py", line 111, in test_ibkr_connection
+    from ib_insync import IB  # lazy import fixes eventkit issue
+    ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/ib_insync/__init__.py", line 6, in <module>
+    from eventkit import Event
+ModuleNotFoundError: No module named 'eventkit'
+
+2026-05-04 06:06:25,927 | ERROR | IBKR Connection: No module named 'eventkit'
+Traceback (most recent call last):
+  File "/Users/jeff/Downloads/XAi/GIT/Clone/GITHUB/FORGE/xforge_trader.py", line 111, in test_ibkr_connection
+    from ib_insync import IB  # lazy import fixes eventkit issue
+    ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/ib_insync/__init__.py", line 6, in <module>
+    from eventkit import Event
+ModuleNotFoundError: No module named 'eventkit'
+
+2026-05-04 06:06:27,594 | ERROR | IBKR Connection: No module named 'eventkit'
+Traceback (most recent call last):
+  File "/Users/jeff/Downloads/XAi/GIT/Clone/GITHUB/FORGE/xforge_trader.py", line 111, in test_ibkr_connection
+    from ib_insync import IB  # lazy import fixes eventkit issue
+    ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/ib_insync/__init__.py", line 6, in <module>
+    from eventkit import Event
+ModuleNotFoundError: No module named 'eventkit'
+
+2026-05-04 06:06:33,679 | ERROR | IBKR Connection: No module named 'eventkit'
+Traceback (most recent call last):
+  File "/Users/jeff/Downloads/XAi/GIT/Clone/GITHUB/FORGE/xforge_trader.py", line 111, in test_ibkr_connection
+    from ib_insync import IB  # lazy import fixes eventkit issue
+    ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/ib_insync/__init__.py", line 6, in <module>
+    from eventkit import Event
+ModuleNotFoundError: No module named 'eventkit'
+
+2026-05-04 06:09:21,232 | ERROR | X Sentiment: 401 Unauthorized
+89 - Invalid or expired token.
+
+2026-05-04 06:09:35,432 | ERROR | X Sentiment: 401 Unauthorized
+89 - Invalid or expired token.
+
+2026-05-04 06:09:58,207 | ERROR | Technical Analysis: Can only use .str accessor with Index, not MultiIndex
+Traceback (most recent call last):
+  File "/Users/jeff/Downloads/XAi/GIT/Clone/GITHUB/FORGE/xforge_trader.py", line 168, in technical_analysis
+    data.ta.rsi(append=True)
+    ~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/pandas_ta/core.py", line 1071, in rsi
+    close = self._get_column(kwargs.pop("close", "close"))
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/pandas_ta/core.py", line 285, in _get_column
+    matches = df.columns.str.match(series, case=False)
+              ^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/pandas/core/accessor.py", line 224, in __get__
+    accessor_obj = self._accessor(obj)
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/pandas/core/strings/accessor.py", line 194, in __init__
+    self._inferred_dtype = self._validate(data)
+                           ~~~~~~~~~~~~~~^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/pandas/core/strings/accessor.py", line 234, in _validate
+    raise AttributeError(
+        "Can only use .str accessor with Index, not MultiIndex"
+    )
+AttributeError: Can only use .str accessor with Index, not MultiIndex
+
+2026-05-04 06:10:07,649 | ERROR | Technical Analysis: Can only use .str accessor with Index, not MultiIndex
+Traceback (most recent call last):
+  File "/Users/jeff/Downloads/XAi/GIT/Clone/GITHUB/FORGE/xforge_trader.py", line 168, in technical_analysis
+    data.ta.rsi(append=True)
+    ~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/pandas_ta/core.py", line 1071, in rsi
+    close = self._get_column(kwargs.pop("close", "close"))
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/pandas_ta/core.py", line 285, in _get_column
+    matches = df.columns.str.match(series, case=False)
+              ^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/pandas/core/accessor.py", line 224, in __get__
+    accessor_obj = self._accessor(obj)
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/pandas/core/strings/accessor.py", line 194, in __init__
+    self._inferred_dtype = self._validate(data)
+                           ~~~~~~~~~~~~~~^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/pandas/core/strings/accessor.py", line 234, in _validate
+    raise AttributeError(
+        "Can only use .str accessor with Index, not MultiIndex"
+    )
+AttributeError: Can only use .str accessor with Index, not MultiIndex
+
+2026-05-04 06:10:14,767 | ERROR | Technical Analysis: Can only use .str accessor with Index, not MultiIndex
+Traceback (most recent call last):
+  File "/Users/jeff/Downloads/XAi/GIT/Clone/GITHUB/FORGE/xforge_trader.py", line 168, in technical_analysis
+    data.ta.rsi(append=True)
+    ~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/pandas_ta/core.py", line 1071, in rsi
+    close = self._get_column(kwargs.pop("close", "close"))
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/pandas_ta/core.py", line 285, in _get_column
+    matches = df.columns.str.match(series, case=False)
+              ^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/pandas/core/accessor.py", line 224, in __get__
+    accessor_obj = self._accessor(obj)
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/pandas/core/strings/accessor.py", line 194, in __init__
+    self._inferred_dtype = self._validate(data)
+                           ~~~~~~~~~~~~~~^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/pandas/core/strings/accessor.py", line 234, in _validate
+    raise AttributeError(
+        "Can only use .str accessor with Index, not MultiIndex"
+    )
+AttributeError: Can only use .str accessor with Index, not MultiIndex
+
+2026-05-04 06:10:21,658 | ERROR | Technical Analysis: Can only use .str accessor with Index, not MultiIndex
+Traceback (most recent call last):
+  File "/Users/jeff/Downloads/XAi/GIT/Clone/GITHUB/FORGE/xforge_trader.py", line 168, in technical_analysis
+    data.ta.rsi(append=True)
+    ~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/pandas_ta/core.py", line 1071, in rsi
+    close = self._get_column(kwargs.pop("close", "close"))
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/pandas_ta/core.py", line 285, in _get_column
+    matches = df.columns.str.match(series, case=False)
+              ^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/pandas/core/accessor.py", line 224, in __get__
+    accessor_obj = self._accessor(obj)
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/pandas/core/strings/accessor.py", line 194, in __init__
+    self._inferred_dtype = self._validate(data)
+                           ~~~~~~~~~~~~~~^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/pandas/core/strings/accessor.py", line 234, in _validate
+    raise AttributeError(
+        "Can only use .str accessor with Index, not MultiIndex"
+    )
+AttributeError: Can only use .str accessor with Index, not MultiIndex
+
