@@ -1,23 +1,20 @@
 #!/usr/bin/env python3
 """
-XForge Trader v7.2 - Updated (Next Iteration)
-- Fixed Gradio port error: now dynamically finds an available port (starts at 7861)
-  or respects GRADIO_SERVER_PORT environment variable
-- Uses yfinance for ALL data pulls (period="max" by default for maximum historical data)
-- Focused on TSLA and NVDA (defaults in UI + pre-fetch on startup)
-- Full historical data stored in SQLite DB via enhanced ticker_cache + dedicated saved tables
-- Save features for ALL metrics: "Save to DB" buttons in Analysis & Backtest tabs
-- New "Saved Data" tab to view/export previously saved metrics for later analysis
-- All other features preserved (RSI/ATR/MA analysis, backtester, self-improvement loop, simulated TWS)
+XForge Trader v7.1 - Improved
+Production-grade algorithmic trading analysis platform.
+- Fixed Pydantic v2 config
+- Robust OpenAI error handling (specifically catches 403 blocked keys)
+- ThreadPoolExecutor instead of fragile asyncio loop
+- Enhanced caching, logging, and graceful degradation
+- Self-improvement loop now non-fatal with clear error reporting
+- Complete, ready-to-run with all tabs
 """
 
 from __future__ import annotations
 
 import asyncio
-import json
 import logging
 import os
-import socket
 import sqlite3
 import sys
 import traceback
@@ -47,9 +44,9 @@ class TradingConfig(BaseModel):
     db_name: str = "xforge_self_improve.db"
     log_file: str = "xforge_trader.log"
     default_tickers: List[str] = Field(
-        default=["TSLA", "NVDA"]
+        default=["TSLA", "AAPL", "MSFT", "GOOGL", "AMZN", "NVDA", "META", "JPM", "V", "XOM"]
     )
-    default_period: str = "max"
+    default_period: str = "1y"
     openai_api_key: SecretStr = Field(default=SecretStr(""))
     x_bearer_token: SecretStr = Field(default=SecretStr(""))
     max_retries: int = 3
@@ -86,17 +83,6 @@ def init_db() -> None:
         c.execute("""CREATE TABLE IF NOT EXISTS ticker_cache (
             ticker TEXT PRIMARY KEY, data_json TEXT, timestamp TEXT
         )""")
-        # NEW: Dedicated tables for saving ALL metrics
-        c.execute("""CREATE TABLE IF NOT EXISTS saved_metrics (
-            id INTEGER PRIMARY KEY, timestamp TEXT, ticker TEXT, period TEXT,
-            close REAL, rsi REAL, atr REAL, sma_20 REAL, ema_20 REAL,
-            volatility REAL, trend TEXT, full_data_json TEXT
-        )""")
-        c.execute("""CREATE TABLE IF NOT EXISTS saved_backtests (
-            id INTEGER PRIMARY KEY, timestamp TEXT, ticker TEXT, period TEXT,
-            final_value REAL, total_return_pct REAL, total_trades INTEGER,
-            win_rate REAL, max_drawdown REAL, trades_json TEXT, equity_curve_json TEXT
-        )""")
         conn.commit()
 
 init_db()
@@ -110,26 +96,15 @@ def log_error(section: str, error_msg: str, tb: str = "") -> None:
         conn.commit()
     logger.error(f"{section}: {error_msg}\n{tb}")
 
-# ==================== DYNAMIC PORT HELPER (FIXES THE EXACT ERROR) ====================
-def get_available_port(start_port: int = 7861, max_tries: int = 20) -> int:
-    """Find the next available port starting from start_port."""
-    for port in range(start_port, start_port + max_tries):
-        try:
-            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
-                sock.bind(('', port))
-                return port
-        except OSError:
-            continue
-    logger.warning(f"No free port found in range {start_port}-{start_port + max_tries}. Falling back to {start_port}")
-    return start_port
-
-# ==================== OPENAI HELPER ====================
+# ==================== OPENAI HELPER (KEY FIX FOR 403) ====================
 def get_openai_client() -> Optional[OpenAI]:
+    """Safely create OpenAI client with validation."""
     key = CONFIG.openai_api_key.get_secret_value().strip()
     if not key:
         return None
     try:
         client = OpenAI(api_key=key)
+        # Quick test call to validate key (cheap)
         client.models.list(limit=1)
         return client
     except OpenAIError as e:
@@ -160,10 +135,10 @@ def ensure_dependencies() -> str:
         return "\n".join(results)
     return "All dependencies ready."
 
-# ==================== CACHED YFINANCE (MAX HISTORICAL DATA) ====================
+# ==================== CACHED YFINANCE ====================
 @lru_cache(maxsize=512)
 def cached_yf_download(
-    ticker: str, period: str = "max", start: Optional[str] = None, end: Optional[str] = None
+    ticker: str, period: str = "1y", start: Optional[str] = None, end: Optional[str] = None
 ) -> pd.DataFrame:
     cache_key = f"{ticker.upper()}_{period}_{start or ''}_{end or ''}"
     with db_connection() as conn:
@@ -197,6 +172,7 @@ def cached_yf_download(
         return pd.DataFrame()
 
 def clear_cache():
+    """Clear the ticker cache from the database."""
     with db_connection() as conn:
         conn.execute("DELETE FROM ticker_cache")
         conn.commit()
@@ -204,6 +180,7 @@ def clear_cache():
 
 # ==================== TECHNICAL INDICATORS ====================
 def calculate_rsi(data: pd.DataFrame, window: int = 14) -> pd.Series:
+    """Calculate RSI with pandas-ta."""
     try:
         rsi = ta.rsi(data['Close'], length=window)
         return rsi
@@ -212,6 +189,7 @@ def calculate_rsi(data: pd.DataFrame, window: int = 14) -> pd.Series:
         return pd.Series([np.nan] * len(data), index=data.index)
 
 def calculate_atr(data: pd.DataFrame, window: int = 14) -> pd.Series:
+    """Calculate Average True Range."""
     try:
         atr = ta.atr(data['High'], data['Low'], data['Close'], length=window)
         return atr
@@ -220,6 +198,7 @@ def calculate_atr(data: pd.DataFrame, window: int = 14) -> pd.Series:
         return pd.Series([np.nan] * len(data), index=data.index)
 
 def calculate_ma(data: pd.DataFrame, window: int = 20, ma_type: str = "SMA") -> pd.Series:
+    """Calculate moving average."""
     try:
         if ma_type == "SMA":
             ma = ta.sma(data['Close'], length=window)
@@ -233,17 +212,20 @@ def calculate_ma(data: pd.DataFrame, window: int = 20, ma_type: str = "SMA") -> 
         return pd.Series([np.nan] * len(data), index=data.index)
 
 # ==================== TICKER ANALYSIS ====================
-def analyze_ticker(ticker: str, period: str = "max") -> Dict[str, Any]:
+def analyze_ticker(ticker: str, period: str = "1y") -> Dict[str, Any]:
+    """Perform comprehensive analysis on a ticker."""
     try:
         data = cached_yf_download(ticker, period=period)
         if data.empty:
             return {"error": "No data available"}
 
+        # Calculate indicators
         data['RSI'] = calculate_rsi(data)
         data['ATR'] = calculate_atr(data)
         data['SMA_20'] = calculate_ma(data, 20, "SMA")
         data['EMA_20'] = calculate_ma(data, 20, "EMA")
 
+        # Basic stats
         latest = data.iloc[-1]
         returns = data['Close'].pct_change().dropna()
         
@@ -257,9 +239,11 @@ def analyze_ticker(ticker: str, period: str = "max") -> Dict[str, Any]:
             "ema_20": round(latest['EMA_20'], 2) if not pd.isna(latest['EMA_20']) else None,
             "volatility": round(returns.std() * np.sqrt(252), 4),
             "trend": "Bullish" if latest['Close'] > latest['SMA_20'] else "Bearish",
-            "data": data.tail(10).to_dict('records')
+            "data": data.tail(10).to_dict('records')  # Last 10 days
         }
+
         return analysis
+
     except Exception as e:
         log_error("Ticker Analysis", f"Error analyzing {ticker}: {e}")
         return {"error": str(e)}
@@ -274,14 +258,16 @@ class Backtester:
 
     def run_strategy(self, rsi_overbought: float = 70, rsi_oversold: float = 30, 
                     ma_window: int = 20, atr_multiplier: float = 2.0) -> Dict[str, Any]:
+        """Simple RSI + MA crossover strategy."""
         try:
+            # Calculate indicators
             data = self.data.copy()
             data['RSI'] = calculate_rsi(data, 14)
             data['SMA'] = calculate_ma(data, ma_window, "SMA")
             data['ATR'] = calculate_atr(data, 14)
 
             capital = self.initial_capital
-            position = 0
+            position = 0  # 0 = flat, 1 = long
             equity = [capital]
 
             for i in range(1, len(data)):
@@ -293,6 +279,7 @@ class Backtester:
                 sma = data['SMA'].iloc[i]
                 atr = data['ATR'].iloc[i]
 
+                # Entry signals
                 if position == 0:
                     if rsi < rsi_oversold and price > sma:
                         shares = capital // price
@@ -303,10 +290,12 @@ class Backtester:
                                 "type": "BUY",
                                 "price": price,
                                 "shares": shares,
-                                "date": str(data.index[i])
+                                "date": data.index[i]
                             })
 
+                # Exit signals
                 elif position > 0:
+                    # Take profit or stop loss
                     entry_price = self.trades[-1]['price']
                     if rsi > rsi_overbought or price < entry_price - atr_multiplier * atr:
                         capital += position * price
@@ -314,15 +303,17 @@ class Backtester:
                             "type": "SELL",
                             "price": price,
                             "shares": position,
-                            "date": str(data.index[i])
+                            "date": data.index[i]
                         })
                         position = 0
 
+                # Update equity
                 if position > 0:
                     equity.append(capital + position * price)
                 else:
                     equity.append(capital)
 
+            # Final value
             final_value = capital + position * data['Close'].iloc[-1] if position > 0 else capital
             total_return = (final_value - self.initial_capital) / self.initial_capital * 100
 
@@ -335,6 +326,7 @@ class Backtester:
                 "equity_curve": equity,
                 "trades": self.trades
             }
+
         except Exception as e:
             log_error("Backtester", f"Error running strategy: {e}")
             return {"error": str(e)}
@@ -349,7 +341,7 @@ class Backtester:
                 sell = sells[i]
                 if sell['price'] > buy['price']:
                     wins += 1
-        return round((wins / (len(buys)//2) * 100), 2) if buys else 0
+        return (wins / (len(buys)//2)) * 100 if buys else 0
 
     def _calculate_max_drawdown(self, equity_curve: List[float]) -> float:
         peak = equity_curve[0]
@@ -360,20 +352,23 @@ class Backtester:
             dd = (peak - value) / peak
             if dd > max_dd:
                 max_dd = dd
-        return round(max_dd * 100, 2)
+        return max_dd * 100
 
-# ==================== TWS/IBKR (SIMULATED) ====================
+# ==================== TWS/IBKR INTEGRATION (SIMULATED) ====================
 def connect_ibkr():
+    """Simulate IBKR/TWS connection."""
     logger.info("IBKR connection not implemented in this version.")
     return {"status": "disconnected", "message": "TWS API integration requires additional setup"}
 
 def place_order_ibkr(ticker: str, action: str, quantity: int):
+    """Simulate order placement."""
     logger.info(f"Simulated {action} order for {quantity} shares of {ticker}")
     return {"status": "success", "action": action, "ticker": ticker, "quantity": quantity}
 
 # ==================== SELF-IMPROVEMENT ====================
 @retry(stop=stop_after_attempt(CONFIG.max_retries), wait=wait_exponential(multiplier=1, max=10))
 def suggest_improvements(prompt: str) -> Optional[str]:
+    """Use OpenAI to suggest improvements to the strategy."""
     client = get_openai_client()
     if not client:
         return "OpenAI client not available. Check API key."
@@ -390,6 +385,7 @@ def suggest_improvements(prompt: str) -> Optional[str]:
         )
         suggestion = response.choices[0].message.content.strip()
         
+        # Log improvement
         with db_connection() as conn:
             conn.execute(
                 "INSERT INTO improvements (timestamp, suggestion) VALUES (?, ?)",
@@ -398,248 +394,139 @@ def suggest_improvements(prompt: str) -> Optional[str]:
             conn.commit()
         
         return suggestion
+
     except Exception as e:
         log_error("Self-Improve", f"OpenAI suggestion failed: {e}")
         return f"Failed to get suggestions: {str(e)}"
 
 def run_self_improvement_loop():
+    """Run self-improvement cycle."""
     logger.info("Starting self-improvement loop...")
+    
+    # Example strategy description
     strategy_desc = """
-    RSI + SMA crossover strategy on TSLA/NVDA with max historical data:
+    RSI + SMA crossover strategy:
     - Buy when RSI < 30 and price > 20-day SMA
     - Sell when RSI > 70 or price drops 2xATR below entry
-    - Backtest shows strong returns with win rate tracking
+    - 1y historical data on SPY
+    - Backtest shows 12% return with 55% win rate
     """
+    
     suggestion = suggest_improvements(strategy_desc)
     if suggestion and "Failed" not in suggestion:
         logger.info(f"Improvement suggestion: {suggestion}")
     else:
         logger.warning(f"Self-improvement failed: {suggestion}")
 
-# ==================== SAVE FEATURES FOR ALL METRICS ====================
-def save_analysis(analysis: dict, period: str = "max") -> str:
-    if not analysis or "error" in analysis:
-        return "No valid analysis to save."
-    try:
-        data_json = json.dumps(analysis.get("data", []))
-        with db_connection() as conn:
-            conn.execute("""
-                INSERT INTO saved_metrics 
-                (timestamp, ticker, period, close, rsi, atr, sma_20, ema_20, volatility, trend, full_data_json)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            """, (
-                datetime.now().isoformat(),
-                analysis.get("ticker"),
-                period,
-                analysis.get("close"),
-                analysis.get("rsi"),
-                analysis.get("atr"),
-                analysis.get("sma_20"),
-                analysis.get("ema_20"),
-                analysis.get("volatility"),
-                analysis.get("trend"),
-                data_json
-            ))
-            conn.commit()
-        return "✅ Analysis metrics saved to database for later analysis!"
-    except Exception as e:
-        log_error("Save Analysis", str(e))
-        return f"❌ Save failed: {str(e)}"
-
-def save_backtest(results: dict, ticker: str, period: str = "max") -> str:
-    if not results or "error" in results:
-        return "No valid backtest to save."
-    try:
-        trades_json = json.dumps(results.get("trades", []))
-        equity_json = json.dumps(results.get("equity_curve", []))
-        with db_connection() as conn:
-            conn.execute("""
-                INSERT INTO saved_backtests 
-                (timestamp, ticker, period, final_value, total_return_pct, total_trades, win_rate, max_drawdown, trades_json, equity_curve_json)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            """, (
-                datetime.now().isoformat(),
-                ticker,
-                period,
-                results.get("final_value"),
-                results.get("total_return_pct"),
-                results.get("total_trades"),
-                results.get("win_rate"),
-                results.get("max_drawdown"),
-                trades_json,
-                equity_json
-            ))
-            conn.commit()
-        return "✅ Backtest results saved to database for later analysis!"
-    except Exception as e:
-        log_error("Save Backtest", str(e))
-        return f"❌ Save failed: {str(e)}"
-
-def load_saved_metrics() -> pd.DataFrame:
-    try:
-        with db_connection() as conn:
-            df = pd.read_sql_query("SELECT * FROM saved_metrics ORDER BY timestamp DESC LIMIT 100", conn)
-        return df
-    except Exception as e:
-        log_error("Load Saved Metrics", str(e))
-        return pd.DataFrame()
-
-def load_saved_backtests() -> pd.DataFrame:
-    try:
-        with db_connection() as conn:
-            df = pd.read_sql_query("SELECT * FROM saved_backtests ORDER BY timestamp DESC LIMIT 100", conn)
-        return df
-    except Exception as e:
-        log_error("Load Saved Backtests", str(e))
-        return pd.DataFrame()
-
-def clear_saved_metrics() -> pd.DataFrame:
-    with db_connection() as conn:
-        conn.execute("DELETE FROM saved_metrics")
-        conn.commit()
-    return load_saved_metrics()
-
 # ==================== GRADIO UI TABS ====================
 def create_analysis_tab():
+    """Create ticker analysis tab."""
     with gr.Tab("Ticker Analysis"):
-        gr.Markdown("### TSLA & NVDA Analysis (Max Historical Data)")
-        ticker_input = gr.Textbox(label="Ticker", value="TSLA")
+        ticker_input = gr.Textbox(label="Ticker", value="AAPL")
         period_input = gr.Dropdown(
-            choices=["1mo", "3mo", "6mo", "1y", "2y", "5y", "max"],
-            value="max",
-            label="Period (max = all available history)"
+            choices=["1mo", "3mo", "6mo", "1y", "2y", "5y"],
+            value="1y",
+            label="Period"
         )
         analyze_btn = gr.Button("Analyze")
-        analysis_output = gr.JSON(label="Analysis Results")
+        output = gr.JSON()
+
+        def run_analysis(ticker, period):
+            result = analyze_ticker(ticker, period)
+            return result
 
         analyze_btn.click(
-            fn=analyze_ticker,
+            fn=run_analysis,
             inputs=[ticker_input, period_input],
-            outputs=analysis_output
-        )
-
-        save_btn = gr.Button("Save Metrics to DB (for later analysis)")
-        save_status = gr.Textbox(label="Save Status", interactive=False)
-        save_btn.click(
-            fn=save_analysis,
-            inputs=[analysis_output, period_input],
-            outputs=save_status
+            outputs=output
         )
 
 def create_backtest_tab():
+    """Create backtesting tab."""
     with gr.Tab("Backtest"):
-        gr.Markdown("### Backtest on TSLA or NVDA (Max Historical Data)")
-        ticker_input = gr.Textbox(label="Ticker", value="TSLA")
+        ticker_input = gr.Textbox(label="Ticker", value="SPY")
         period_input = gr.Dropdown(
-            choices=["1mo", "3mo", "6mo", "1y", "2y", "5y", "max"],
-            value="max",
-            label="Period (max = all available history)"
+            choices=["6mo", "1y", "2y"],
+            value="1y",
+            label="Period"
         )
         backtest_btn = gr.Button("Run Backtest")
-        backtest_result = gr.JSON(label="Backtest Results")
+        output = gr.JSON()
+
+        def run_backtest(ticker, period):
+            data = cached_yf_download(ticker, period=period)
+            if data.empty:
+                return {"error": "No data"}
+            
+            backtester = Backtester(data)
+            results = backtester.run_strategy()
+            return results
 
         backtest_btn.click(
-            fn=lambda t, p: Backtester(cached_yf_download(t, period=p)).run_strategy(),
+            fn=run_backtest,
             inputs=[ticker_input, period_input],
-            outputs=backtest_result
-        )
-
-        save_backtest_btn = gr.Button("Save Backtest to DB (for later analysis)")
-        save_backtest_status = gr.Textbox(label="Save Status", interactive=False)
-        save_backtest_btn.click(
-            fn=save_backtest,
-            inputs=[backtest_result, ticker_input, period_input],
-            outputs=save_backtest_status
+            outputs=output
         )
 
 def create_self_improve_tab():
+    """Create self-improvement tab."""
     with gr.Tab("Self-Improve"):
         strategy_input = gr.Textbox(
-            label="Describe your strategy (focused on TSLA/NVDA)",
-            placeholder="e.g., RSI + SMA on TSLA with max historical data...",
-            value="RSI(14) + SMA(20) crossover on TSLA/NVDA daily chart with max history"
+            label="Describe your strategy",
+            placeholder="e.g., RSI(14) + SMA(20) crossover on daily chart..."
         )
         improve_btn = gr.Button("Get Improvement Suggestions")
-        output = gr.Textbox(label="Suggestions", lines=10)
+        output = gr.Textbox(label="Suggestions")
+
+        def get_suggestions(strategy):
+            suggestion = suggest_improvements(strategy)
+            return suggestion or "No suggestions generated."
 
         improve_btn.click(
-            fn=suggest_improvements,
+            fn=get_suggestions,
             inputs=strategy_input,
             outputs=output
         )
 
-def create_saved_tab():
-    with gr.Tab("Saved Data"):
-        gr.Markdown("### All Saved Metrics (Ready for Later Analysis)")
-        
-        with gr.Row():
-            load_metrics_btn = gr.Button("Load Saved Metrics")
-            clear_metrics_btn = gr.Button("Clear Saved Metrics")
-        
-        metrics_table = gr.Dataframe(label="Saved Ticker Metrics", interactive=False)
-        load_metrics_btn.click(fn=load_saved_metrics, outputs=metrics_table)
-        clear_metrics_btn.click(fn=clear_saved_metrics, outputs=metrics_table)
-        
-        gr.Markdown("---")
-        gr.Markdown("### Saved Backtest Results")
-        load_back_btn = gr.Button("Load Saved Backtests")
-        back_table = gr.Dataframe(label="Saved Backtests", interactive=False)
-        load_back_btn.click(fn=load_saved_backtests, outputs=back_table)
-
 def create_main_ui():
-    with gr.Blocks(title="XForge Trader v7.2 - TSLA/NVDA Focus") as demo:
-        gr.Markdown("# XForge Trader v7.2")
-        gr.Markdown("**TSLA & NVDA focused** • Max historical data via yfinance • All metrics savable to DB • Self-improving • Simulated TWS")
+    """Create main Gradio interface with all tabs."""
+    with gr.Blocks(title="XForge Trader v7.1") as demo:
+        gr.Markdown("# XForge Trader v7.1")
+        gr.Markdown("Advanced algorithmic trading analysis platform with self-improvement.")
 
         with gr.Tabs():
             create_analysis_tab()
             create_backtest_tab()
             create_self_improve_tab()
-            create_saved_tab()
 
         gr.Markdown("---")
-        gr.Markdown("### System Status")
+        gr.Markdown("### Status")
         status_output = gr.JSON(lambda: {
             "status": "ready",
             "dependencies": ensure_dependencies(),
-            "database": "initialized with saved_metrics + saved_backtests tables",
-            "cache": "active (max historical data)",
-            "default_tickers": CONFIG.default_tickers,
-            "port_note": "Port auto-selected to avoid conflicts"
+            "database": "initialized",
+            "cache": "active"
         })
 
     return demo
 
 # ==================== MAIN EXECUTION ====================
 def main():
-    logger.info("XForge Trader v7.2 starting...")
+    """Main entry point."""
+    logger.info("XForge Trader v7.1 starting...")
 
+    # Initialize
     init_db()
     ensure_dependencies()
 
-    # Pre-fetch MAX historical data for TSLA and NVDA (stored in DB)
-    logger.info("Pre-fetching maximum historical data for TSLA and NVDA...")
-    for ticker in ["TSLA", "NVDA"]:
-        data = cached_yf_download(ticker, period="max")
-        logger.info(f"Loaded {len(data)} rows of max history for {ticker}")
-
-    # Optional self-improvement on startup
+    # Optional: Run self-improvement on startup
     # run_self_improvement_loop()
 
+    # Launch UI
     demo = create_main_ui()
-
-    # PORT FIX: Dynamic available port (starts at 7861) or env var
-    env_port = os.getenv("GRADIO_SERVER_PORT")
-    if env_port:
-        port = int(env_port)
-    else:
-        port = get_available_port(7861)
-
-    logger.info(f"Launching Gradio on port {port} (set GRADIO_SERVER_PORT env var to override)")
-
     demo.launch(
         server_name="0.0.0.0",
-        server_port=port,
+        server_port=7860,
         share=False,
         debug=True
     )
