@@ -57,3 +57,29 @@
 2026-05-04 15:34:12,253 | INFO | httpx | HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
 2026-05-04 15:34:54,429 | ERROR | xforge_trader | Ticker Analysis: The truth value of a Series is ambiguous. Use a.empty, a.bool(), a.item(), a.any() or a.all().
 
+2026-05-04 15:37:57,462 | INFO | xforge_trader | XForge Trader v7.3 starting...
+2026-05-04 15:37:57,994 | INFO | httpx | HTTP Request: HEAD https://huggingface.co/api/telemetry/https%3A/api.gradio.app/gradio-initiated-analytics "HTTP/1.1 200 OK"
+2026-05-04 15:37:58,085 | INFO | xforge_trader | Launching on port 7861 (use GRADIO_SERVER_PORT env var to override)
+2026-05-04 15:37:58,349 | INFO | httpx | HTTP Request: GET http://localhost:7861/gradio_api/startup-events "HTTP/1.1 200 OK"
+2026-05-04 15:37:58,379 | INFO | httpx | HTTP Request: HEAD http://localhost:7861/ "HTTP/1.1 200 OK"
+2026-05-04 15:37:58,431 | INFO | httpx | HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2026-05-04 15:37:58,754 | INFO | httpx | HTTP Request: HEAD https://huggingface.co/api/telemetry/https%3A/api.gradio.app/gradio-launched-telemetry "HTTP/1.1 200 OK"
+2026-05-04 15:44:32,279 | INFO | xforge_trader | XForge Trader v7.4 starting...
+2026-05-04 15:44:32,697 | INFO | xforge_trader | Launching on port 7861
+2026-05-04 15:44:32,756 | INFO | httpx | HTTP Request: HEAD https://huggingface.co/api/telemetry/https%3A/api.gradio.app/gradio-initiated-analytics "HTTP/1.1 200 OK"
+2026-05-04 15:44:32,917 | INFO | httpx | HTTP Request: GET http://localhost:7861/gradio_api/startup-events "HTTP/1.1 200 OK"
+2026-05-04 15:44:32,939 | INFO | httpx | HTTP Request: HEAD http://localhost:7861/ "HTTP/1.1 200 OK"
+2026-05-04 15:44:33,202 | INFO | httpx | HTTP Request: HEAD https://huggingface.co/api/telemetry/https%3A/api.gradio.app/gradio-launched-telemetry "HTTP/1.1 200 OK"
+2026-05-04 15:44:33,209 | INFO | httpx | HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2026-05-04 15:44:56,694 | ERROR | xforge_trader | Ticker Analysis: The truth value of a Series is ambiguous. Use a.empty, a.bool(), a.item(), a.any() or a.all().
+
+2026-05-04 15:46:09,437 | ERROR | xforge_trader | RSI: 'Close'
+
+2026-05-04 15:46:09,440 | ERROR | xforge_trader | ATR: 'High'
+
+2026-05-04 15:46:09,443 | ERROR | xforge_trader | MA: 'Close'
+
+2026-05-04 15:46:09,446 | ERROR | xforge_trader | MA: 'Close'
+
+2026-05-04 15:46:09,449 | ERROR | xforge_trader | Ticker Analysis: 'Close'
+
