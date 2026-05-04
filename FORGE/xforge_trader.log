@@ -83,3 +83,10 @@
 
 2026-05-04 15:46:09,449 | ERROR | xforge_trader | Ticker Analysis: 'Close'
 
+2026-05-04 15:49:15,633 | INFO | xforge_trader | XForge Trader v7.4 starting...
+2026-05-04 15:49:16,052 | INFO | xforge_trader | Launching on port 7862
+2026-05-04 15:49:16,081 | INFO | httpx | HTTP Request: HEAD https://huggingface.co/api/telemetry/https%3A/api.gradio.app/gradio-initiated-analytics "HTTP/1.1 200 OK"
+2026-05-04 15:49:16,265 | INFO | httpx | HTTP Request: GET http://localhost:7862/gradio_api/startup-events "HTTP/1.1 200 OK"
+2026-05-04 15:49:16,287 | INFO | httpx | HTTP Request: HEAD http://localhost:7862/ "HTTP/1.1 200 OK"
+2026-05-04 15:49:16,569 | INFO | httpx | HTTP Request: HEAD https://huggingface.co/api/telemetry/https%3A/api.gradio.app/gradio-launched-telemetry "HTTP/1.1 200 OK"
+2026-05-04 15:49:16,602 | INFO | httpx | HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
