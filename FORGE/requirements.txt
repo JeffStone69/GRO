@@ -1,1 +1,11 @@
-ib_insync eventkit yfinance pandas-ta plotly beautifulsoup4 requests numpy gradio openai tweepy
+ib_insync
+eventkit
+yfinance 
+pandas-ta 
+pplotly 
+beautifulsoup4 
+requests 
+numpy 
+gradio 
+openai 
+tweepy

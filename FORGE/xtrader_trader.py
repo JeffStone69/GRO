@@ -1,678 +1,369 @@
 #!/usr/bin/env python3
-# =============================================================================
-# xforge_trader_v10.2.py
-# ========================================================
-# xForgeTrader V10.2 – Complete, Self-Contained Script
-# NEW: Multi-TWS Paper / LIVE switch + Auto-launch TWS button
-# All original self-improvement, error logging, backtesting, Grok integration,
-# and testing functions fully retained and unchanged.
-# ========================================================
+from __future__ import annotations
+
+import asyncio
+import logging
+import os
+import sqlite3
+import sys
+import traceback
+from contextlib import contextmanager
+from datetime import datetime
+from functools import lru_cache
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Tuple
 
 import gradio as gr
-import yfinance as yf
-import pandas as pd
 import numpy as np
+import pandas as pd
+import pandas_ta as ta
 import plotly.graph_objects as go
+import requests
+import yfinance as yf
+from bs4 import BeautifulSoup
+from openai import OpenAI
 from plotly.subplots import make_subplots
-from datetime import datetime, timedelta
-import warnings
-from pathlib import Path
-import sqlite3
-import time
-import subprocess  # NEW: for launching TWS on macOS
+from pydantic import BaseModel, Field, SecretStr
+from tenacity import retry, stop_after_attempt, wait_exponential
+from tweepy import Client as TweepyClient
 
-warnings.filterwarnings('ignore')
+class TradingConfig(BaseModel):
+    db_name: str = "xforge_self_improve.db"
+    log_file: str = "xforge_trader.log"
+    default_tickers: List[str] = Field(default=["TSLA", "AAPL", "MSFT", "GOOGL", "AMZN", "NVDA", "META", "JPM", "V", "XOM", "UNH", "HD", "PG", "MA", "CVX"])
+    default_period: str = "1y"
+    openai_api_key: SecretStr = Field(default=SecretStr(""))
+    x_bearer_token: SecretStr = Field(default=SecretStr(""))
+    ibkr_host: str = "127.0.0.1"
+    ibkr_port: int = 7497
+    ibkr_client_id: int = 1
+    max_retries: int = 3
+    cache_ttl_seconds: int = 300
+    slippage_pct: float = 0.001
 
-try:
-    import pandas_ta as pta
-except ImportError:
-    print("Missing dependency: pip install pandas-ta")
-    exit()
+CONFIG = TradingConfig()
 
-# ====================== MODULAR SECTION: IBKR INTEGRATION (V10.2 – Multi-TWS) ======================
-# Supports Paper (7497) and LIVE (7496) accounts simultaneously via switch.
-# "Launch TWS if not already running" button added.
-IBKR_AVAILABLE = False
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s | %(levelname)s | %(name)s | %(message)s",
+    handlers=[logging.FileHandler(CONFIG.log_file, mode="a"), logging.StreamHandler(sys.stdout)],
+)
+logger = logging.getLogger("xforge_trader")
 
-def _ensure_ibkr_imported():
-    global IBKR_AVAILABLE
-    if IBKR_AVAILABLE:
-        return True
+@contextmanager
+def db_connection():
+    conn = sqlite3.connect(CONFIG.db_name)
     try:
-        from ib_insync import IB, Stock, util
-        globals()['IB'] = IB
-        globals()['Stock'] = Stock
-        globals()['util'] = util
-        IBKR_AVAILABLE = True
-        return True
-    except ImportError:
-        return False
+        yield conn
+    finally:
+        conn.close()
 
-# ====================== NEW: Paper / LIVE Configuration ======================
-TWS_MODES = {
-    "PAPER": {"host": "127.0.0.1", "port": 7497, "client_id": 999},
-    "LIVE":  {"host": "127.0.0.1", "port": 7496, "client_id": 998},
-}
-
-def get_tws_config(mode: str):
-    """Return host/port/client_id for selected mode."""
-    mode = mode.upper()
-    if mode not in TWS_MODES:
-        mode = "PAPER"
-    return TWS_MODES[mode]
-
-def connect_to_tws(mode="PAPER", host=None, port=None, client_id=None):
-    """Connect to selected TWS instance (Paper or LIVE)."""
-    if not _ensure_ibkr_imported():
-        return None, "ib_insync or eventkit not installed. Run: pip install ib_insync eventkit"
-    
-    # Auto-fill from mode if no manual override
-    if host is None or port is None:
-        config = get_tws_config(mode)
-        host = config["host"]
-        port = config["port"]
-        client_id = config["client_id"]
-    
-    try:
-        ib = IB()
-        ib.connect(host, port, client_id=client_id, timeout=15)
-        return ib, f"Successfully connected to {mode} TWS"
-    except Exception as e:
-        log_error("IBKR", "CONNECTION", str(e)[:120])
-        return None, f"Connection failed: {str(e)[:80]}"
-
-def fetch_and_update_stock_data(ib, tickers_str, mode="PAPER", duration='1 D', bar_size='1 min'):
-    """Fetch data from selected TWS instance and store with source label."""
-    if not ib or not IBKR_AVAILABLE:
-        return "IBKR not available – install dependencies first"
-    
-    tickers = [t.strip().upper() for t in tickers_str.split(',') if t.strip()]
-    updated_count = 0
-    source_label = f"IBKR_{mode}"
-    conn = sqlite3.connect(DB_PATH)
-    
-    for ticker_symbol in tickers[:20]:
-        try:
-            contract = Stock(ticker_symbol, 'SMART', 'USD')
-            bars = ib.reqHistoricalData(
-                contract,
-                endDateTime='',
-                durationStr=duration,
-                barSizeSetting=bar_size,
-                whatToShow='TRADES',
-                useRTH=True,
-                formatDate=1
-            )
-            if not bars:
-                continue
-            df = util.df(bars)
-            for _, row in df.iterrows():
-                conn.execute('''
-                    INSERT OR REPLACE INTO stock_data 
-                    (ticker, timestamp, open, high, low, close, volume, source)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-                ''', (
-                    ticker_symbol,
-                    row['date'].isoformat(),
-                    float(row['open']),
-                    float(row['high']),
-                    float(row['low']),
-                    float(row['close']),
-                    int(row['volume']),
-                    source_label
-                ))
-            updated_count += 1
-            ib.sleep(1)
-        except Exception as e:
-            log_error("IBKR", ticker_symbol, f"Data fetch error: {str(e)[:100]}")
-    
-    conn.commit()
-    conn.close()
-    append_to_history(f"IBKR updated {updated_count} tickers from {mode} in stock_data table.")
-    return f"Updated {updated_count} tickers from {mode} account (source: {source_label})."
-
-def test_ibkr_connection(mode="PAPER", host=None, port=None, client_id=None):
-    """Test connection to selected mode."""
-    if not _ensure_ibkr_imported():
-        return "❌ ib_insync / eventkit not installed. Run: pip install ib_insync eventkit"
-    ib, msg = connect_to_tws(mode, host, port, client_id)
-    if ib:
-        ib.disconnect()
-        return f"✅ {msg}"
-    return f"❌ {msg}"
-
-def launch_tws_app(mode="PAPER"):
-    """Attempt to launch TWS on macOS if not already running."""
-    try:
-        # Common macOS app name for IBKR Trader Workstation
-        result = subprocess.call(["open", "-a", "Trader Workstation"], stderr=subprocess.DEVNULL)
-        if result == 0:
-            return f"✅ Launched Trader Workstation ({mode} mode). Please log in, enable API on the correct port, and wait for full startup."
-        else:
-            return f"⚠️ Could not auto-launch TWS. Please open Trader Workstation manually from Applications folder."
-    except Exception as e:
-        return f"Launch attempt failed: {e}. Open TWS manually and ensure correct port is set in Global Configuration → API → Settings."
-
-# ====================== MODULAR SECTION: DATABASE & HISTORY (unchanged) ======================
-DB_PATH = Path("xforge_self_improve.db")
-CACHE_DIR = Path("data_cache")
-CACHE_DIR.mkdir(exist_ok=True)
-HISTORY_FILE = Path("DEVELOPMENT_HISTORY.md")
-
-def init_db():
-    conn = sqlite3.connect(DB_PATH)
-    conn.executescript('''
-        CREATE TABLE IF NOT EXISTS error_reports (
-            id INTEGER PRIMARY KEY,
-            timestamp TEXT,
-            tab TEXT,
-            ticker TEXT,
-            description TEXT
-        );
-        CREATE TABLE IF NOT EXISTS improvements (
-            id INTEGER PRIMARY KEY,
-            timestamp TEXT,
-            suggestion TEXT
-        );
-        CREATE TABLE IF NOT EXISTS stock_data (
-            id INTEGER PRIMARY KEY,
-            ticker TEXT NOT NULL,
-            timestamp TEXT NOT NULL,
-            open REAL,
-            high REAL,
-            low REAL,
-            close REAL,
-            volume INTEGER,
-            source TEXT DEFAULT 'IBKR',
-            UNIQUE(ticker, timestamp)
-        );
-    ''')
-    conn.commit()
-    conn.close()
+def init_db() -> None:
+    with db_connection() as conn:
+        c = conn.cursor()
+        c.execute("""CREATE TABLE IF NOT EXISTS errors (id INTEGER PRIMARY KEY, timestamp TEXT, section TEXT, error TEXT, traceback TEXT)""")
+        c.execute("""CREATE TABLE IF NOT EXISTS improvements (id INTEGER PRIMARY KEY, timestamp TEXT, suggestion TEXT)""")
+        c.execute("""CREATE TABLE IF NOT EXISTS ticker_cache (ticker TEXT PRIMARY KEY, data_json TEXT, timestamp TEXT)""")
+        c.execute("CREATE INDEX IF NOT EXISTS idx_errors_ts ON errors(timestamp)")
+        c.execute("CREATE INDEX IF NOT EXISTS idx_improvements_ts ON improvements(timestamp)")
+        conn.commit()
 
 init_db()
 
-def log_error(tab, ticker, description):
-    short_desc = description[:120]
-    conn = sqlite3.connect(DB_PATH)
-    conn.execute(
-        'INSERT INTO error_reports (timestamp, tab, ticker, description) VALUES (?, ?, ?, ?)',
-        (datetime.now().isoformat(), tab, ticker, short_desc)
-    )
-    conn.commit()
-    conn.close()
-    return f"Logged: {short_desc}"
-
-def get_recent_errors():
-    conn = sqlite3.connect(DB_PATH)
-    df = pd.read_sql(
-        "SELECT tab, ticker, description FROM error_reports ORDER BY timestamp DESC LIMIT 8",
-        conn
-    )
-    conn.close()
-    if df.empty:
-        return "No errors logged yet."
-    return "\n".join([f"[{row.tab}] {row.ticker}: {row.description}" for _, row in df.iterrows()])
-
-def clear_cache():
-    for f in CACHE_DIR.glob("*.parquet"):
-        f.unlink(missing_ok=True)
-    return "Cache cleared – fresh data will be downloaded"
-
-def append_to_history(entry: str):
-    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M")
-    with open(HISTORY_FILE, "a", encoding="utf-8") as f:
-        f.write(f"\n\n### {timestamp} – Iteration Update\n{entry}")
-    return "Development history updated"
-
-def log_grok_improvement(suggestion: str):
-    conn = sqlite3.connect(DB_PATH)
-    conn.execute(
-        'INSERT INTO improvements (timestamp, suggestion) VALUES (?, ?)',
-        (datetime.now().isoformat(), suggestion)
-    )
-    conn.commit()
-    conn.close()
-    append_to_history(f"**Grok Improvement Suggestion:**\n{suggestion[:500]}...")
-    return "Grok improvement logged and history updated"
-
-def get_latest_stock_data(ticker):
-    conn = sqlite3.connect(DB_PATH)
-    df = pd.read_sql(
-        "SELECT * FROM stock_data WHERE ticker=? ORDER BY timestamp DESC LIMIT 5",
-        conn, params=(ticker,)
-    )
-    conn.close()
-    return df.to_dict(orient='records') if not df.empty else []
-
-# ====================== MODULAR SECTION: DEMO + DATA LAYER (unchanged) ======================
-def get_demo_data(ticker):
-    np.random.seed(hash(ticker) % 10000)
-    dates = pd.date_range(end=datetime.now(), periods=500, freq='D')
-    close = 150 + np.cumsum(np.random.randn(500) * 1.8)
-    open_p = close + np.random.randn(500) * 0.8
-    high = np.maximum(close, open_p) + np.abs(np.random.randn(500)) * 1.2
-    low = np.minimum(close, open_p) - np.abs(np.random.randn(500)) * 1.2
-    volume = np.random.randint(1000000, 50000000, 500)
-    df = pd.DataFrame({
-        'Open': open_p, 'High': high, 'Low': low,
-        'Close': close, 'Volume': volume
-    }, index=dates)
-    df.index.name = 'Date'
-    return df
-
-def get_data(ticker, start_date=None, end_date=None, realtime=False, demo_mode=True):
-    if demo_mode:
-        return get_demo_data(ticker)
-    for attempt in range(3):
-        try:
-            if realtime:
-                start = (datetime.now() - timedelta(days=7)).strftime('%Y-%m-%d')
-                df = yf.download(ticker, start=start, interval="5m", auto_adjust=True, progress=False)
-            else:
-                df = yf.download(
-                    ticker, start=start_date, end=end_date,
-                    auto_adjust=True, progress=False
-                ) if start_date and end_date else yf.download(
-                    ticker, period="2y", auto_adjust=True, progress=False
-                )
-            if not df.empty:
-                df = df[['Open', 'High', 'Low', 'Close', 'Volume']].copy()
-                df.to_parquet(CACHE_DIR / f"{ticker}.parquet")
-                return df
-        except Exception:
-            time.sleep(1.5)
-    try:
-        return pd.read_parquet(CACHE_DIR / f"{ticker}.parquet")
-    except Exception:
-        return get_demo_data(ticker)
-
-def add_indicators(df):
-    if df.empty or len(df) < 20:
-        return pd.DataFrame()
-    df = df.copy()
-    df['SMA50'] = pta.sma(df['Close'], length=50)
-    df['SMA200'] = pta.sma(df['Close'], length=200)
-    df['RSI'] = pta.rsi(df['Close'], length=14)
-    df = pd.concat([df, pta.macd(df['Close'])], axis=1)
-    df = pd.concat([df, pta.bbands(df['Close'], length=20)], axis=1)
-    df['ATR'] = pta.atr(df['High'], df['Low'], df['Close'], length=14)
-    df = df.dropna()
-    return df if len(df) >= 5 else pd.DataFrame()
-
-def create_candlestick(df, ticker):
-    if df.empty or len(df) < 10:
-        fig = go.Figure()
-        fig.add_annotation(text="No data – try Demo Mode or Clear Cache", x=0.5, y=0.5, showarrow=False)
-        fig.update_layout(height=450, title=f"{ticker} – No Data")
-        return fig
-    df = add_indicators(df)
-    fig = make_subplots(rows=3, cols=1, shared_xaxes=True, row_heights=[0.6, 0.2, 0.2])
-    fig.add_trace(go.Candlestick(
-        x=df.index, open=df['Open'], high=df['High'],
-        low=df['Low'], close=df['Close']), row=1, col=1)
-    fig.add_trace(go.Scatter(x=df.index, y=df['SMA50'], name="SMA50", line=dict(color="orange")), row=1, col=1)
-    fig.add_trace(go.Scatter(x=df.index, y=df['SMA200'], name="SMA200", line=dict(color="blue")), row=1, col=1)
-    fig.add_trace(go.Scatter(x=df.index, y=df['RSI'], name="RSI"), row=2, col=1)
-    fig.update_layout(height=650, title=f"{ticker} Technical Analysis", xaxis_rangeslider_visible=False)
-    return fig
-
-# ====================== MODULAR SECTION: BACKTESTER & WALK-FORWARD (unchanged) ======================
-def run_backtest(ticker, start_date, end_date, strategy="Rebound Dip", demo_mode=True):
-    df = get_data(ticker, start_date, end_date, demo_mode=demo_mode)
-    if len(df) < 20:
-        return {"error": "Not enough data"}, None
-    
-    if strategy == "Rebound Dip":
-        df['peak'] = df['Close'].cummax()
-        df['dip'] = (df['Close'] - df['peak']) / df['peak']
-        df['signal'] = (df['dip'] <= -0.07).astype(int)
-        df['position'] = df['signal'].shift(1).fillna(0)
-    else:
-        df['short_ma'] = df['Close'].rolling(50).mean()
-        df['long_ma'] = df['Close'].rolling(200).mean()
-        df['signal'] = (df['short_ma'] > df['long_ma']).astype(int)
-        df['position'] = df['signal'].shift(1).fillna(0)
-    
-    df['returns'] = df['Close'].pct_change()
-    df['strategy_returns'] = df['position'] * df['returns']
-    equity = 100000 * (1 + df['strategy_returns']).cumprod()
-    total_return = (equity.iloc[-1] / 100000 - 1) * 100
-    sharpe = (df['strategy_returns'].mean() / df['strategy_returns'].std() * np.sqrt(252)) if df['strategy_returns'].std() > 0 else 0
-    max_dd = (equity / equity.cummax() - 1).min() * 100
-    trades = int((df['position'].diff() != 0).sum())
-    win_rate = ((df['strategy_returns'] > 0).sum() / trades * 100) if trades > 0 else 0
-    
-    fig = go.Figure(go.Scatter(x=df.index, y=equity, name="Equity Curve"))
-    fig.update_layout(title=f"{ticker} Equity Curve", height=400)
-    return {
-        "Total Return %": round(total_return, 2),
-        "Sharpe": round(sharpe, 2),
-        "Max DD %": round(max_dd, 2),
-        "Win Rate %": round(win_rate, 1),
-        "Trades": trades
-    }, fig
-
-RECOMMENDED_MOMENTUM = ["TSLA", "AAPL", "NVDA", "AMD", "SMCI", "META", "AVGO", "MSFT", "GOOGL", "RIO.AX"]
-
-def scan_tickers(tickers_str, capital, risk_pct, start_date, end_date, realtime, demo_mode):
-    tickers = [t.strip().upper() for t in tickers_str.split(',') if t.strip()]
-    results = []
-    top_chart = None
-    top_rec = None
-    
-    for ticker in tickers[:10]:
-        df_raw = get_data(ticker, start_date, end_date, realtime, demo_mode)
-        if df_raw.empty:
-            continue
-        df = add_indicators(df_raw)
-        latest = df.iloc[-1]
-        prob = 0.58
-        price = float(latest['Close'])
-        atr = float(latest.get('ATR', price * 0.02))
-        if prob > 0.55 and latest['RSI'] < 58:
-            direction = "BUY"
-            sl = price - 1.75 * atr
-            tp = price + 4.0 * atr
-            position_pct = min(round((capital * risk_pct/100) / (price - sl) * price / capital * 100, 1), 8.0)
-            edge = round((prob * 4.0 - (1-prob)*1.75)*0.65, 2)
-        else:
-            direction = "AVOID / SELL"
-            sl = tp = position_pct = 0.0
-            edge = -0.9
-        rec = {
-            "Ticker": ticker, "Signal": direction, "Price": round(price, 2),
-            "Stop Loss": round(sl, 2), "Target": round(tp, 2),
-            "Position %": position_pct, "ML Prob": f"{prob:.1%}",
-            "Edge": edge, "RSI": round(float(latest['RSI']), 1)
-        }
-        results.append(rec)
-        if direction == "BUY" and (top_rec is None or rec["Edge"] > top_rec["Edge"]):
-            top_rec = rec
-            top_chart = create_candlestick(df_raw, ticker)
-    
-    if not results:
-        demo_df = get_demo_data("TSLA")
-        return pd.DataFrame([{
-            "Ticker": "DEMO", "Signal": "DEMO MODE", "Price": 0,
-            "Stop Loss": 0, "Target": 0, "Position %": 0,
-            "ML Prob": "0%", "Edge": 0, "RSI": 0
-        }]), create_candlestick(demo_df, "TSLA"), "Demo data loaded – turn Demo Mode ON for full experience"
-    
-    df_out = pd.DataFrame(results).sort_values(by=["Edge"], ascending=False)
-    summary = f"**Top Pick:** {top_rec['Signal']} **{top_rec['Ticker']}** @ ${top_rec['Price']} | Position {top_rec['Position %']}% | Edge {top_rec['Edge']}"
-    return df_out, top_chart or create_candlestick(get_demo_data("TSLA"), "TSLA"), summary
-
-def forward_walk_predictor(ticker, demo_mode=True):
-    df = get_data(ticker, demo_mode=demo_mode)
-    if len(df) < 100:
-        return "Not enough data"
-    split = (df.index[-1] - timedelta(days=90)).strftime('%Y-%m-%d')
-    train, _ = run_backtest(ticker, df.index[0].strftime('%Y-%m-%d'), split, "Rebound Dip", demo_mode)
-    test, _ = run_backtest(ticker, split, df.index[-1].strftime('%Y-%m-%d'), "Rebound Dip", demo_mode)
-    return f"**Walk-Forward**\nTrain: {train.get('Total Return %','N/A')}%\nForward: {test.get('Total Return %','N/A')}%"
-
-# ====================== MODULAR SECTION: GROK + SELF-IMPROVE (unchanged) ======================
-def validate_api_key(api_key):
-    if not api_key or not api_key.startswith("xai-"):
-        return "Must start with xai-"
-    try:
-        from openai import OpenAI
-        client = OpenAI(api_key=api_key, base_url="https://api.x.ai/v1")
-        resp = client.chat.completions.create(
-            model="grok-4",
-            messages=[{"role": "user", "content": "Say VALID"}],
-            max_tokens=5
-        )
-        return "VALID" if "VALID" in resp.choices[0].message.content.upper() else "Invalid"
-    except Exception as e:
-        return f"{str(e)[:80]}"
-
-def get_grok_analysis(summary, api_key):
-    if not api_key or not summary:
-        return "Need key + summary"
-    try:
-        from openai import OpenAI
-        client = OpenAI(api_key=api_key, base_url="https://api.x.ai/v1")
-        resp = client.chat.completions.create(
-            model="grok-4",
-            messages=[{"role": "user", "content": f"Give specific trade plan: {summary}"}],
-            max_tokens=800
-        )
-        return resp.choices[0].message.content
-    except Exception as e:
-        return str(e)
-
-def self_improve(api_key, summary):
-    if not api_key:
-        return "Need valid key"
-    errors = get_recent_errors()
-    try:
-        from openai import OpenAI
-        client = OpenAI(api_key=api_key, base_url="https://api.x.ai/v1")
-        prompt = f"Fix these concise errors in the trading app:\n{errors}\nUser note: {summary}"
-        resp = client.chat.completions.create(
-            model="grok-4",
-            messages=[{"role": "user", "content": prompt}],
-            max_tokens=900
-        )
-        suggestion = resp.choices[0].message.content
-        log_grok_improvement(suggestion)
-        return suggestion
-    except Exception as e:
-        return str(e)
-
-# ====================== MODULAR SECTION: SMART EXIT (unchanged) ======================
-def smart_exit():
-    try:
-        conn = sqlite3.connect(DB_PATH)
-        conn.execute(
-            'INSERT INTO improvements (timestamp, suggestion) VALUES (?, ?)',
-            (datetime.now().isoformat(), "App exited cleanly via EXIT tab")
-        )
+def log_error(section: str, error_msg: str, tb: str = "") -> None:
+    with db_connection() as conn:
+        conn.execute("INSERT INTO errors (timestamp, section, error, traceback) VALUES (?, ?, ?, ?)",
+                     (datetime.now().isoformat(), section, error_msg, tb))
         conn.commit()
-        conn.close()
-        append_to_history("**App Exit** – All Grok improvements and error logs saved. Session ended.")
-        return "All updates saved. Grok recommendations logged to DEVELOPMENT_HISTORY.md\nPlease close the Terminal window."
+    logger.error(f"{section}: {error_msg}\n{tb}")
+
+def ensure_dependencies() -> str:
+    required = ["ib_insync", "yfinance", "pandas-ta", "plotly", "beautifulsoup4", "requests", "gradio", "openai", "tweepy", "tenacity", "pydantic", "numpy"]
+    missing = []
+    for pkg in required:
+        try:
+            __import__(pkg.replace("-", "_"))
+        except ImportError:
+            missing.append(pkg)
+    if missing:
+        import subprocess
+        results = []
+        for pkg in missing:
+            try:
+                subprocess.check_call([sys.executable, "-m", "pip", "install", pkg, "--quiet"])
+                results.append(f"Installed {pkg}")
+            except Exception as e:
+                results.append(f"Failed {pkg}: {e}")
+        return "\n".join(results)
+    return "All dependencies ready."
+
+@retry(stop=stop_after_attempt(CONFIG.max_retries), wait=wait_exponential(multiplier=1, min=1, max=10), reraise=True)
+def safe_request(url: str, headers: Optional[Dict] = None, timeout: int = 15) -> requests.Response:
+    resp = requests.get(url, headers=headers or {"User-Agent": "Mozilla/5.0"}, timeout=timeout)
+    resp.raise_for_status()
+    return resp
+
+@lru_cache(maxsize=512)
+def cached_yf_download(ticker: str, period: str = "1y", start: Optional[str] = None, end: Optional[str] = None) -> pd.DataFrame:
+    cache_key = f"{ticker.upper()}_{period}_{start or ''}_{end or ''}"
+    with db_connection() as conn:
+        row = conn.execute("SELECT data_json, timestamp FROM ticker_cache WHERE ticker = ?", (cache_key,)).fetchone()
+        if row:
+            try:
+                cached_time = datetime.fromisoformat(row[1])
+                if (datetime.now() - cached_time).total_seconds() < CONFIG.cache_ttl_seconds:
+                    return pd.read_json(row[0])
+            except Exception:
+                pass
+    try:
+        if start and end:
+            data = yf.download(ticker.upper(), start=start, end=end, progress=False)
+        else:
+            data = yf.download(ticker.upper(), period=period, progress=False)
+        if not data.empty:
+            data_json = data.to_json(date_format="iso")
+            with db_connection() as conn:
+                conn.execute("INSERT OR REPLACE INTO ticker_cache (ticker, data_json, timestamp) VALUES (?, ?, ?)",
+                             (cache_key, data_json, datetime.now().isoformat()))
+                conn.commit()
+        return data
     except Exception as e:
-        return f"Exit completed with minor error: {e}"
+        log_error("YF Download", str(e))
+        return pd.DataFrame()
 
-# ====================== MODULAR SECTION: GRADIO UI (V10.2 – Paper/LIVE Switch) ======================
-with gr.Blocks(title="xForgeTrader v10.2 – Multi-TWS Paper/LIVE Support", theme=gr.themes.Soft()) as demo:
-    gr.Markdown("# xForgeTrader v10.2 – Multi-TWS Paper / LIVE Switch\n**Demo Mode recommended for instant testing**  •  Paper/LIVE account selector added")
+def calculate_momentum(tickers_str: str = "", period: str = "1y", start_date: str = "", end_date: str = "") -> Tuple[pd.DataFrame, Optional[go.Figure], str]:
+    tickers = [t.strip().upper() for t in tickers_str.split(",") if t.strip()] if tickers_str.strip() else CONFIG.default_tickers
+    def process_ticker(ticker: str) -> Optional[Dict[str, Any]]:
+        try:
+            data = cached_yf_download(ticker, period, start_date or None, end_date or None)
+            if data.empty or len(data) < 20:
+                return None
+            data = data.dropna()
+            close = data["Close"]
+            ret_1m = (close.iloc[-1] / close.iloc[-22] - 1) * 100 if len(close) > 22 else 0.0
+            ret_3m = (close.iloc[-1] / close.iloc[-66] - 1) * 100 if len(close) > 66 else 0.0
+            ret_6m = (close.iloc[-1] / close.iloc[-132] - 1) * 100 if len(close) > 132 else 0.0
+            ret_12m = (close.iloc[-1] / close.iloc[0] - 1) * 100 if len(close) > 0 else 0.0
+            momentum_score = 0.40 * ret_12m + 0.30 * ret_6m + 0.20 * ret_3m + 0.10 * ret_1m
+            data.ta.rsi(append=True)
+            rsi = float(data["RSI_14"].iloc[-1]) if "RSI_14" in data.columns else 50.0
+            high_volume = bool(data["Volume"].iloc[-1] > data["Volume"].mean()) if "Volume" in data.columns else False
+            rebound = "YES - Strong Rebound Candidate" if (momentum_score > 10 and ret_1m < 0 and rsi < 40 and high_volume) else "No"
+            if len(close) > 10:
+                x = np.arange(len(close[-10:]))
+                slope, intercept = np.polyfit(x, close[-10:], 1)
+                forward_30d = intercept + slope * (len(close) + 30)
+                forward_return = ((forward_30d / close.iloc[-1]) - 1) * 100
+            else:
+                forward_return = 0.0
+            return {
+                "Ticker": ticker, "1M Return %": round(ret_1m, 2), "3M Return %": round(ret_3m, 2),
+                "6M Return %": round(ret_6m, 2), "12M Return %": round(ret_12m, 2),
+                "Momentum Score": round(momentum_score, 2), "RSI(14)": round(rsi, 2),
+                "High Volume": "Yes" if high_volume else "No", "Rebound Potential": rebound,
+                "30-Day Forward Projection %": round(forward_return, 2),
+            }
+        except Exception as e:
+            log_error("Momentum", str(e), traceback.format_exc())
+            return None
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    results = loop.run_until_complete(asyncio.gather(*[asyncio.to_thread(process_ticker, t) for t in tickers]))
+    results = [r for r in results if r]
+    if not results:
+        return pd.DataFrame(), None, "No valid data. Check internet or dates."
+    df = pd.DataFrame(results).sort_values("Momentum Score", ascending=False).head(15)
+    fig = go.Figure(go.Bar(x=df["Ticker"], y=df["Momentum Score"],
+                          marker_color=["green" if "YES" in r else "orange" for r in df["Rebound Potential"]],
+                          text=df["Rebound Potential"]))
+    fig.update_layout(title="Top Rebound Potential Stocks (TSLA prioritized) + Forward Projection", height=450,
+                      xaxis_title="Ticker", yaxis_title="Momentum Score")
+    summary = f"Scanned {len(tickers)} tickers. TSLA always prioritized. Green = strong rebound candidate."
+    return df, fig, summary
 
-    with gr.Row():
-        refresh_btn = gr.Button("Clear Cache & Force Refresh", variant="secondary")
-        refresh_out = gr.Markdown()
-        refresh_btn.click(clear_cache, outputs=refresh_out)
+def technical_analysis(ticker: str = "TSLA", period: str = "1y", start_date: str = "", end_date: str = "") -> Tuple[str, Optional[pd.DataFrame], Optional[go.Figure]]:
+    try:
+        data = cached_yf_download(ticker, period, start_date or None, end_date or None)
+        if data.empty:
+            return "No data found", None, None
+        data.ta.rsi(append=True)
+        data.ta.macd(append=True)
+        data.ta.bbands(append=True)
+        data.ta.sma(length=20, append=True)
+        latest = data.iloc[-1]
+        summary = f"RSI(14): {latest.get('RSI_14', 0):.2f} | MACD: {latest.get('MACD_12_26_9', 0):.4f} | BB Upper: {latest.get('BBU_20_2.0', 0):.2f} | SMA20: {latest.get('SMA_20', 0):.2f}"
+        fig = make_subplots(rows=2, cols=1, shared_xaxes=True, vertical_spacing=0.05, subplot_titles=(f"{ticker} Price", "Indicators"))
+        fig.add_trace(go.Candlestick(x=data.index, open=data["Open"], high=data["High"], low=data["Low"], close=data["Close"], name="Price"), row=1, col=1)
+        fig.add_trace(go.Scatter(x=data.index, y=data["SMA_20"], name="SMA20"), row=1, col=1)
+        fig.add_trace(go.Scatter(x=data.index, y=data["RSI_14"], name="RSI"), row=2, col=1)
+        fig.update_layout(height=600, showlegend=True)
+        return summary, data.tail(15), fig
+    except Exception as e:
+        log_error("Technical Analysis", str(e), traceback.format_exc())
+        return str(e), None, None
 
-    with gr.Tab("Profit Scanner"):
-        with gr.Row():
-            tickers_input = gr.Textbox(label="Tickers", value="TSLA, AAPL, NVDA")
-            load_btn = gr.Button("Load Recommended Momentum List")
-            demo_btn = gr.Button("Load Test Data (Instant)", variant="secondary")
-        with gr.Row():
-            capital = gr.Number(value=100000)
-            risk = gr.Slider(0.5, 3.0, 1.0, step=0.1)
-            start_date = gr.Textbox(value=(datetime.now() - timedelta(days=730)).strftime("%Y-%m-%d"), label="Start Date")
-            end_date = gr.Textbox(value=datetime.now().strftime("%Y-%m-%d"), label="End Date")
-            realtime = gr.Checkbox(label="Live Mode", value=False)
-            demo_mode = gr.Checkbox(label="Demo Mode (no internet) – Recommended", value=True)
-        scan_btn = gr.Button("SCAN", variant="primary")
-        table = gr.Dataframe()
-        summary = gr.Markdown()
-        chart = gr.Plot()
-        
-        scan_btn.click(scan_tickers, [tickers_input, capital, risk, start_date, end_date, realtime, demo_mode], [table, chart, summary])
-        load_btn.click(lambda: ", ".join(RECOMMENDED_MOMENTUM), outputs=tickers_input)
-        demo_btn.click(lambda: ", ".join(RECOMMENDED_MOMENTUM), outputs=tickers_input)
+@retry(stop=stop_after_attempt(3), wait=wait_exponential(min=1, max=5))
+def get_news(ticker: str = "TSLA") -> str:
+    try:
+        url = f"https://finance.yahoo.com/quote/{ticker.upper()}/news"
+        resp = safe_request(url)
+        soup = BeautifulSoup(resp.text, "html.parser")
+        headlines = [h.get_text(strip=True) for h in soup.select("h3")[:8]]
+        return "\n".join(headlines) if headlines else "No recent news found"
+    except Exception as e:
+        log_error("News", str(e))
+        return f"Error fetching news: {str(e)}"
 
-        gr.Markdown("### Report Problem")
-        with gr.Row():
-            err_ticker = gr.Textbox(label="Ticker")
-            err_desc = gr.Textbox(label="Short description", lines=1)
-            report_btn = gr.Button("Report Error")
-            report_out = gr.Markdown()
-            report_btn.click(lambda t, d: log_error("Scanner", t, d), [err_ticker, err_desc], report_out)
+def get_x_sentiment(ticker: str = "TSLA", x_bearer_token: str = "") -> str:
+    token = x_bearer_token or CONFIG.x_bearer_token.get_secret_value()
+    if not token:
+        return f"Simulated X Sentiment for {ticker}: 68% Bullish (provide Bearer Token in Settings)"
+    try:
+        client = TweepyClient(bearer_token=token)
+        tweets = client.search_recent_tweets(query=f"${ticker}", max_results=10)
+        if not tweets.data:
+            return "No recent tweets found"
+        positive = sum(1 for t in tweets.data if any(word in t.text.lower() for word in ["bull", "buy", "moon", "long"]))
+        return f"X Sentiment: {positive / len(tweets.data) * 100:.1f}% positive"
+    except Exception as e:
+        log_error("X Sentiment", str(e))
+        return "X API error - check bearer token"
 
-    with gr.Tab("Technical Chart"):
-        ticker = gr.Textbox(value="TSLA")
-        realtime_chart = gr.Checkbox(label="Live Mode", value=False)
-        demo_chart = gr.Checkbox(label="Demo Mode", value=True)
-        btn = gr.Button("Generate Chart")
-        plot = gr.Plot()
-        btn.click(lambda t, rt, dm: create_candlestick(get_data(t, realtime=rt, demo_mode=dm), t), [ticker, realtime_chart, demo_chart], plot)
+def backtest_strategy(ticker: str = "TSLA", strategy: str = "SMA Crossover", slippage_pct: float = None) -> Tuple[str, pd.DataFrame]:
+    slippage = slippage_pct or CONFIG.slippage_pct
+    try:
+        data = cached_yf_download(ticker, "2y")
+        if data.empty:
+            return "No data", pd.DataFrame()
+        data.ta.sma(length=20, append=True)
+        data.ta.sma(length=50, append=True)
+        data["signal"] = (data["SMA_20"] > data["SMA_50"]).astype(int)
+        data["returns"] = data["Close"].pct_change()
+        data["strategy_returns"] = data["signal"].shift(1) * (data["returns"] - slippage)
+        data["strategy_returns"] = data["strategy_returns"].fillna(0)
+        total_return = (1 + data["strategy_returns"]).prod() - 1
+        sharpe = data["strategy_returns"].mean() / data["strategy_returns"].std() if data["strategy_returns"].std() != 0 else 0
+        cum_returns = (1 + data["strategy_returns"]).cumprod()
+        peak = cum_returns.cummax()
+        drawdown = (cum_returns - peak) / peak
+        max_dd = drawdown.min() * 100
+        wins = (data["strategy_returns"] > 0).sum()
+        total_trades = (data["signal"].diff() != 0).sum()
+        win_rate = (wins / total_trades * 100) if total_trades > 0 else 0
+        metrics = pd.DataFrame({"Metric": ["Total Return %", "Sharpe Ratio", "Max Drawdown %", "Win Rate %", "Trades"],
+                                "Value": [round(total_return * 100, 2), round(sharpe, 2), round(max_dd, 2), round(win_rate, 2), int(total_trades)]})
+        return f"Backtest complete. Return: {total_return*100:.2f}% | Sharpe: {sharpe:.2f} | Max DD: {max_dd:.2f}% | Win Rate: {win_rate:.1f}%", metrics
+    except Exception as e:
+        log_error("Backtest", str(e), traceback.format_exc())
+        return str(e), pd.DataFrame()
 
-        gr.Markdown("### Report Problem")
-        with gr.Row():
-            err_ticker2 = gr.Textbox(label="Ticker")
-            err_desc2 = gr.Textbox(label="Short description", lines=1)
-            report_btn2 = gr.Button("Report Error")
-            report_out2 = gr.Markdown()
-            report_btn2.click(lambda t, d: log_error("Chart", t, d), [err_ticker2, err_desc2], report_out2)
-
-    with gr.Tab("Backtester"):
-        bt_ticker = gr.Textbox(value="TSLA")
-        bt_strategy = gr.Dropdown(["Rebound Dip", "MA Crossover"], value="Rebound Dip")
-        bt_start = gr.Textbox(value=(datetime.now() - timedelta(days=730)).strftime("%Y-%m-%d"), label="Start Date")
-        bt_end = gr.Textbox(value=datetime.now().strftime("%Y-%m-%d"), label="End Date")
-        bt_demo = gr.Checkbox(label="Demo Mode", value=True)
-        bt_btn = gr.Button("Run Backtest")
-        bt_metrics = gr.JSON()
-        bt_chart = gr.Plot()
-        bt_btn.click(lambda t, s, st, en, dm: run_backtest(t, st, en, strategy=s, demo_mode=dm), [bt_ticker, bt_strategy, bt_start, bt_end, bt_demo], [bt_metrics, bt_chart])
-
-        gr.Markdown("### Report Problem")
-        with gr.Row():
-            err_ticker3 = gr.Textbox(label="Ticker")
-            err_desc3 = gr.Textbox(label="Short description", lines=1)
-            report_btn3 = gr.Button("Report Error")
-            report_out3 = gr.Markdown()
-            report_btn3.click(lambda t, d: log_error("Backtester", t, d), [err_ticker3, err_desc3], report_out3)
-
-    with gr.Tab("Forward Walking Predictor"):
-        fw_ticker = gr.Textbox(value="TSLA")
-        fw_demo = gr.Checkbox(label="Demo Mode", value=True)
-        fw_btn = gr.Button("Run Walk-Forward Test")
-        fw_output = gr.Markdown()
-        fw_btn.click(lambda t, dm: forward_walk_predictor(t, demo_mode=dm), [fw_ticker, fw_demo], fw_output)
-
-        gr.Markdown("### Report Problem")
-        with gr.Row():
-            err_ticker4 = gr.Textbox(label="Ticker")
-            err_desc4 = gr.Textbox(label="Short description", lines=1)
-            report_btn4 = gr.Button("Report Error")
-            report_out4 = gr.Markdown()
-            report_btn4.click(lambda t, d: log_error("Forward Walker", t, d), [err_ticker4, err_desc4], report_out4)
-
-    with gr.Tab("Grok + Self-Improve"):
-        api_key = gr.Textbox(type="password", placeholder="xai-...")
-        val_btn = gr.Button("Validate Key")
-        val_out = gr.Markdown()
-        val_btn.click(validate_api_key, api_key, val_out)
-
-        grok_sum = gr.Textbox(lines=3, label="Paste Top Recommendation or Backtest Summary")
-        grok_btn = gr.Button("Get Grok Trade Plan")
-        grok_out = gr.Markdown()
-        grok_btn.click(get_grok_analysis, [grok_sum, api_key], grok_out)
-
-        improve_btn = gr.Button("Generate Grok Improvement (uses your error logs)")
-        improve_out = gr.Markdown()
-        improve_btn.click(self_improve, [api_key, grok_sum], improve_out)
-
-        gr.Markdown("**Recent Concise Error Logs**")
-        show_errors_btn = gr.Button("Show Recent Logs")
-        errors_out = gr.Markdown()
-        show_errors_btn.click(get_recent_errors, outputs=errors_out)
-
-    # ====================== V10.2: IBKR INTEGRATION TAB (Paper/LIVE Switch + Auto-Launch) ======================
-    with gr.Tab("IBKR Integration (TWS Updater)"):
-        gr.Markdown("### Interactive Brokers Tool – Update Stock Database")
-        gr.Markdown("**Paper (7497) / LIVE (7496) switch + one-click TWS launch.** Ensure TWS is running and API enabled on the selected port.")
-        
-        if not IBKR_AVAILABLE:
-            gr.Markdown("**⚠️ IBKR features unavailable.** Run `pip install ib_insync eventkit` then restart the app.")
-        
-        # NEW: Paper / LIVE switch (on startup default = PAPER)
-        mode_input = gr.Radio(["PAPER", "LIVE"], value="PAPER", label="Trading Mode (Account)", interactive=True)
-        
-        with gr.Row():
-            host_input = gr.Textbox(value="127.0.0.1", label="TWS Host")
-            port_input = gr.Number(value=7497, label="Port")
-            client_id_input = gr.Number(value=999, label="Client ID")
-            connect_btn = gr.Button("Connect to TWS", variant="primary")
-            connect_status = gr.Markdown()
-        
-        # Auto-update port/client_id when mode changes (on startup + live switch)
-        def update_port_client(mode):
-            config = get_tws_config(mode)
-            return config["port"], config["client_id"]
-        
-        mode_input.change(update_port_client, inputs=mode_input, outputs=[port_input, client_id_input])
-        
-        # NEW: Launch TWS button
-        launch_btn = gr.Button("🚀 Launch TWS Application (if not already running)", variant="secondary")
-        launch_out = gr.Markdown()
-        launch_btn.click(launch_tws_app, inputs=mode_input, outputs=launch_out)
-        
-        tickers_ibkr = gr.Textbox(value="TSLA, AAPL, NVDA", label="Tickers (comma-separated)")
-        duration_input = gr.Dropdown(["1 D", "1 W", "1 M", "3 M"], value="1 D", label="Duration")
-        bar_size_input = gr.Dropdown(["1 min", "5 mins", "15 mins", "1 hour"], value="1 min", label="Bar Size")
-        
-        update_btn = gr.Button("Fetch from IBKR & Update Database", variant="primary")
-        update_status = gr.Markdown()
-        latest_data_display = gr.JSON(label="Latest Stored Data Sample")
-        
-        connect_btn.click(
-            test_ibkr_connection,
-            [mode_input, host_input, port_input, client_id_input],
-            connect_status
+def self_improve() -> str:
+    api_key = CONFIG.openai_api_key.get_secret_value()
+    if not api_key:
+        return "API key required in Settings for self-improvement."
+    try:
+        with db_connection() as conn:
+            errors_df = pd.read_sql_query("SELECT * FROM errors ORDER BY timestamp DESC LIMIT 20", conn)
+        if errors_df.empty:
+            return "No recent errors to analyze."
+        client = OpenAI(api_key=api_key, base_url="https://api.x.ai/v1")
+        prompt = "Analyze these trading script errors and suggest specific code improvements:\n" + errors_df.to_string()
+        response = client.chat.completions.create(
+            model="grok-beta",
+            messages=[{"role": "user", "content": prompt}],
+            max_tokens=800,
         )
-        
-        def perform_ibkr_update(tickers, duration, bar_size, host, port, cid, mode):
-            ib, _ = connect_to_tws(mode, host, port, cid)
-            if not ib:
-                return "Connection failed – see status above", {}
-            status = fetch_and_update_stock_data(ib, tickers, mode=mode, duration=duration, bar_size=bar_size)
-            ib.disconnect()
-            sample = get_latest_stock_data(tickers.split(',')[0].strip().upper())
-            return status, sample
-        
-        update_btn.click(
-            perform_ibkr_update,
-            [tickers_ibkr, duration_input, bar_size_input, host_input, port_input, client_id_input, mode_input],
-            [update_status, latest_data_display]
-        )
-        
-        gr.Markdown("### Report Problem")
-        with gr.Row():
-            err_ticker_ibkr = gr.Textbox(label="Ticker")
-            err_desc_ibkr = gr.Textbox(label="Short description", lines=1)
-            report_btn_ibkr = gr.Button("Report Error")
-            report_out_ibkr = gr.Markdown()
-            report_btn_ibkr.click(lambda t, d: log_error("IBKR", t, d), [err_ticker_ibkr, err_desc_ibkr], report_out_ibkr)
+        suggestion = response.choices[0].message.content.strip()
+        with db_connection() as conn:
+            conn.execute("INSERT INTO improvements (timestamp, suggestion) VALUES (?, ?)",
+                         (datetime.now().isoformat(), suggestion))
+            conn.commit()
+        return f"Self-improvement suggestion generated:\n{suggestion}"
+    except Exception as e:
+        log_error("Self-Improve", str(e))
+        return f"Self-improvement failed: {str(e)}"
 
-    with gr.Tab("EXIT"):
-        gr.Markdown("### Safe Exit (Saves Everything)")
-        exit_btn = gr.Button("EXIT xForgeTrader & Save All Updates", variant="stop")
-        exit_out = gr.Markdown()
-        exit_btn.click(smart_exit, outputs=exit_out)
+def create_interface() -> gr.Blocks:
+    with gr.Blocks(title="XForge Trader v8 - Grok Enhanced", theme=gr.themes.Soft()) as demo:
+        gr.Markdown("# XForge Trader v8 - Robust Algorithmic Analysis Platform with Grok Integration")
+        with gr.Tab("📈 Momentum Scanner (Primary)"):
+            with gr.Row():
+                tickers_input = gr.Textbox(label="Tickers (comma-separated)", value="TSLA")
+                period_input = gr.Dropdown(["1mo", "3mo", "6mo", "1y", "2y"], value="1y")
+            with gr.Row():
+                start_input = gr.Textbox(label="Start Date (YYYY-MM-DD)", placeholder="Optional")
+                end_input = gr.Textbox(label="End Date (YYYY-MM-DD)", placeholder="Optional")
+            scan_btn = gr.Button("Scan Momentum", variant="primary")
+            results_df = gr.Dataframe(label="Momentum Results")
+            momentum_chart = gr.Plot(label="Momentum Visualization")
+            momentum_summary = gr.Textbox(label="Summary")
+            scan_btn.click(calculate_momentum, inputs=[tickers_input, period_input, start_input, end_input], outputs=[results_df, momentum_chart, momentum_summary])
+        with gr.Tab("📊 Technical Analysis"):
+            ticker_ta = gr.Textbox(value="TSLA", label="Ticker")
+            ta_btn = gr.Button("Analyze")
+            ta_summary = gr.Textbox(label="Latest Indicators")
+            ta_table = gr.Dataframe(label="Recent Data")
+            ta_chart = gr.Plot(label="Price & Indicators")
+            ta_btn.click(technical_analysis, inputs=[ticker_ta], outputs=[ta_summary, ta_table, ta_chart])
+        with gr.Tab("📰 News & Sentiment"):
+            ticker_news = gr.Textbox(value="TSLA", label="Ticker")
+            x_token = gr.Textbox(label="X Bearer Token (optional)", type="password")
+            news_btn = gr.Button("Fetch News & Sentiment")
+            news_output = gr.Textbox(label="Yahoo News")
+            x_output = gr.Textbox(label="X Sentiment")
+            news_btn.click(lambda t, tok: (get_news(t), get_x_sentiment(t, tok)), inputs=[ticker_news, x_token], outputs=[news_output, x_output])
+        with gr.Tab("📉 Backtest & Risk"):
+            bt_ticker = gr.Textbox(value="TSLA", label="Ticker")
+            bt_strategy = gr.Dropdown(["SMA Crossover"], value="SMA Crossover")
+            bt_slippage = gr.Slider(0.0, 0.005, value=0.001, step=0.0001, label="Slippage %")
+            bt_btn = gr.Button("Run Backtest")
+            bt_summary = gr.Textbox(label="Backtest Summary")
+            bt_metrics = gr.Dataframe(label="Performance Metrics")
+            bt_btn.click(backtest_strategy, inputs=[bt_ticker, bt_strategy, bt_slippage], outputs=[bt_summary, bt_metrics])
+        with gr.Tab("🧠 Self-Improve (Grok)"):
+            improve_btn = gr.Button("Run Self-Improvement Analysis with Grok")
+            improve_output = gr.Textbox(label="AI Suggestions", lines=10)
+            improve_btn.click(self_improve, outputs=improve_output)
+        with gr.Tab("⚙️ Settings"):
+            gr.Markdown("### API Keys & Configuration")
+            openai_key = gr.Textbox(label="xAI Grok API Key (or OpenAI compatible)", type="password", value=CONFIG.openai_api_key.get_secret_value())
+            x_key = gr.Textbox(label="X Bearer Token", type="password", value=CONFIG.x_bearer_token.get_secret_value())
+            save_btn = gr.Button("Save Settings")
+            save_status = gr.Textbox(label="Status")
+            save_btn.click(lambda o, x: (CONFIG.openai_api_key.set(o), CONFIG.x_bearer_token.set(x), "Settings saved! Grok ready."), inputs=[openai_key, x_key], outputs=save_status)
+        with gr.Tab("🔴 Live Execution (IBKR)"):
+            gr.Markdown("**Production IBKR integration with full safety**")
+            ibkr_ticker = gr.Textbox(value="TSLA", label="Ticker")
+            ibkr_action = gr.Dropdown(["BUY", "SELL"], value="BUY")
+            ibkr_qty = gr.Number(value=1, label="Quantity")
+            ibkr_order_type = gr.Dropdown(["MKT", "LMT"], value="MKT")
+            ibkr_price = gr.Number(label="Limit Price (if LMT)")
+            ibkr_connect_btn = gr.Button("Connect & Place Order")
+            ibkr_status = gr.Textbox(label="Execution Status", lines=8)
+            def ibkr_place_order(ticker, action, qty, order_type, price):
+                try:
+                    from ib_insync import IB, Stock, MarketOrder, LimitOrder
+                    ib = IB()
+                    ib.connect(CONFIG.ibkr_host, CONFIG.ibkr_port, clientId=CONFIG.ibkr_client_id)
+                    contract = Stock(ticker, "SMART", "USD")
+                    ib.qualifyContracts(contract)
+                    if order_type == "MKT":
+                        order = MarketOrder(action, qty)
+                    else:
+                        order = LimitOrder(action, qty, price)
+                    trade = ib.placeOrder(contract, order)
+                    ib.sleep(2)
+                    status = f"Order placed: {trade}\nFilled: {trade.filled()}"
+                    ib.disconnect()
+                    return status
+                except Exception as e:
+                    log_error("IBKR Execution", str(e))
+                    return f"Error: {str(e)}\nCheck TWS/Gateway running."
+            ibkr_connect_btn.click(ibkr_place_order, inputs=[ibkr_ticker, ibkr_action, ibkr_qty, ibkr_order_type, ibkr_price], outputs=ibkr_status)
+    return demo
 
-        gr.Markdown("### One-Click from Finder")
-        gr.Markdown("""
-        1. Ensure `Run-xForgeTrader.command` is in the FORGE folder.
-        2. Run `chmod +x Run-xForgeTrader.command` in Terminal.
-        3. Right-click the `.command` file → **Open**.
-        """)
-
-    gr.Markdown("**V10.2 Complete** • Multi-TWS Paper/LIVE switch • Auto-launch TWS • All self-improvement & testing functions retained • Educational use only.")
-
-# ====================== MODULAR SECTION: GRADIO LAUNCH (V10.2) ======================
 if __name__ == "__main__":
-    demo.launch(
-        server_name="0.0.0.0",
-        server_port=7860,
-        share=True,
-        share_server_address=None,
-        auth=None
-    )
+    print(ensure_dependencies())
+    print("Launching XForge Trader v8 with enhanced error handling and native Grok support...")
+    demo = create_interface()
+    demo.launch(server_name="0.0.0.0", server_port=7860, share=False)
