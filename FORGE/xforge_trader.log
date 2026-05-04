@@ -26,3 +26,25 @@
 2026-05-04 15:21:22,674 | INFO | httpx | HTTP Request: HEAD http://localhost:7862/ "HTTP/1.1 200 OK"
 2026-05-04 15:21:22,945 | INFO | httpx | HTTP Request: HEAD https://huggingface.co/api/telemetry/https%3A/api.gradio.app/gradio-launched-telemetry "HTTP/1.1 200 OK"
 2026-05-04 15:21:23,035 | INFO | httpx | HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2026-05-04 15:22:09,347 | INFO | xforge_trader | XForge Trader v7.2 starting...
+2026-05-04 15:22:09,348 | INFO | xforge_trader | Pre-fetching maximum historical data for TSLA and NVDA...
+2026-05-04 15:22:10,464 | INFO | xforge_trader | Loaded 3985 rows of max history for TSLA
+2026-05-04 15:22:11,268 | INFO | xforge_trader | Loaded 6861 rows of max history for NVDA
+2026-05-04 15:22:11,563 | INFO | xforge_trader | Launching Gradio on port 7862 (set GRADIO_SERVER_PORT env var to override)
+2026-05-04 15:22:11,701 | INFO | httpx | HTTP Request: HEAD https://huggingface.co/api/telemetry/https%3A/api.gradio.app/gradio-initiated-analytics "HTTP/1.1 200 OK"
+2026-05-04 15:22:11,772 | INFO | httpx | HTTP Request: GET http://localhost:7862/gradio_api/startup-events "HTTP/1.1 200 OK"
+2026-05-04 15:22:11,791 | INFO | httpx | HTTP Request: HEAD http://localhost:7862/ "HTTP/1.1 200 OK"
+2026-05-04 15:22:12,051 | INFO | httpx | HTTP Request: HEAD https://huggingface.co/api/telemetry/https%3A/api.gradio.app/gradio-launched-telemetry "HTTP/1.1 200 OK"
+2026-05-04 15:22:12,210 | INFO | httpx | HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2026-05-04 15:22:28,543 | ERROR | xforge_trader | Ticker Analysis: Error analyzing TSLA: The truth value of a Series is ambiguous. Use a.empty, a.bool(), a.item(), a.any() or a.all().
+
+2026-05-04 15:23:04,340 | INFO | xforge_trader | XForge Trader v7.2 starting...
+2026-05-04 15:23:04,341 | INFO | xforge_trader | Pre-fetching maximum historical data for TSLA and NVDA...
+2026-05-04 15:23:05,684 | INFO | xforge_trader | Loaded 3985 rows of max history for TSLA
+2026-05-04 15:23:06,595 | INFO | xforge_trader | Loaded 6861 rows of max history for NVDA
+2026-05-04 15:23:06,915 | INFO | xforge_trader | Launching Gradio on port 7861 (set GRADIO_SERVER_PORT env var to override)
+2026-05-04 15:23:07,069 | INFO | httpx | HTTP Request: HEAD https://huggingface.co/api/telemetry/https%3A/api.gradio.app/gradio-initiated-analytics "HTTP/1.1 200 OK"
+2026-05-04 15:23:07,132 | INFO | httpx | HTTP Request: GET http://localhost:7861/gradio_api/startup-events "HTTP/1.1 200 OK"
+2026-05-04 15:23:07,151 | INFO | httpx | HTTP Request: HEAD http://localhost:7861/ "HTTP/1.1 200 OK"
+2026-05-04 15:23:07,437 | INFO | httpx | HTTP Request: HEAD https://huggingface.co/api/telemetry/https%3A/api.gradio.app/gradio-launched-telemetry "HTTP/1.1 200 OK"
+2026-05-04 15:23:07,513 | INFO | httpx | HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
