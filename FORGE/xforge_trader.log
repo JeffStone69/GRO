@@ -90,3 +90,10 @@
 2026-05-04 15:49:16,287 | INFO | httpx | HTTP Request: HEAD http://localhost:7862/ "HTTP/1.1 200 OK"
 2026-05-04 15:49:16,569 | INFO | httpx | HTTP Request: HEAD https://huggingface.co/api/telemetry/https%3A/api.gradio.app/gradio-launched-telemetry "HTTP/1.1 200 OK"
 2026-05-04 15:49:16,602 | INFO | httpx | HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2026-05-04 15:52:54,152 | INFO | xforge_trader | XForge Trader v7.4 starting...
+2026-05-04 15:52:54,625 | INFO | xforge_trader | Launching on port 7863
+2026-05-04 15:52:54,777 | INFO | httpx | HTTP Request: HEAD https://huggingface.co/api/telemetry/https%3A/api.gradio.app/gradio-initiated-analytics "HTTP/1.1 200 OK"
+2026-05-04 15:52:54,921 | INFO | httpx | HTTP Request: GET http://localhost:7863/gradio_api/startup-events "HTTP/1.1 200 OK"
+2026-05-04 15:52:54,949 | INFO | httpx | HTTP Request: HEAD http://localhost:7863/ "HTTP/1.1 200 OK"
+2026-05-04 15:52:55,101 | INFO | httpx | HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2026-05-04 15:52:55,386 | INFO | httpx | HTTP Request: HEAD https://huggingface.co/api/telemetry/https%3A/api.gradio.app/gradio-launched-telemetry "HTTP/1.1 200 OK"
