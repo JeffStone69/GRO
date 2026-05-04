@@ -1,2 +1,0 @@
-2026-05-04 14:30:28,579 | INFO | HTTP Request: HEAD https://huggingface.co/api/telemetry/https%3A/api.gradio.app/gradio-initiated-analytics "HTTP/1.1 200 OK"
-2026-05-04 14:30:29,092 | INFO | HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
