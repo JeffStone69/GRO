@@ -16,6 +16,27 @@ import os
 import socket
 import sqlite3
 import sys
+# ==================== AUTO-INSTALL DEPENDENCIES (runs at startup) ====================
+import sys
+
+def ensure_dependencies() -> str:
+    required = ["yfinance", "pandas-ta", "plotly", "gradio", "openai", "tenacity", "pydantic", "numpy", "pandas"]
+    missing = []
+    for pkg in required:
+        try:
+            __import__(pkg.replace("-", "_"))
+        except ImportError:
+            missing.append(pkg)
+    if missing:
+        import subprocess
+        for pkg in missing:
+            print(f"📦 Installing missing package: {pkg}")
+            subprocess.check_call([sys.executable, "-m", "pip", "install", pkg, "--quiet"])
+        return f"✅ Installed: {', '.join(missing)}"
+    return "✅ All dependencies ready."
+
+# Run it immediately
+print(ensure_dependencies())
 from contextlib import contextmanager
 from datetime import datetime
 from functools import lru_cache

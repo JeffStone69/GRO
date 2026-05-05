@@ -1,0 +1,12 @@
+ib_insync
+eventkit
+yfinance 
+pandas-ta 
+pplotly 
+beautifulsoup4 
+requests 
+numpy 
+gradio 
+openai 
+tweepy
+tenacity
