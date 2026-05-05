@@ -1,4 +1,0 @@
-2026-05-06 06:31:11,562 | INFO | xforge_trader | XForge Trader v8.0 starting...
-2026-05-06 06:31:12,027 | INFO | httpx | HTTP Request: HEAD https://huggingface.co/api/telemetry/https%3A/api.gradio.app/gradio-initiated-analytics "HTTP/1.1 200 OK"
-2026-05-06 06:31:12,246 | INFO | xforge_trader | Launching on port 7861
-2026-05-06 06:31:12,512 | INFO | httpx | HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
