@@ -10,7 +10,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent))
 
 import gradio as gr
-from config import config
+from config import XAI_API_KEY, DB_PATH, SIM_DB_PATH
 from modules.multi_ticker_watchlist import build_watchlist_tab
 from modules.strategy_optimizer import build_optimizer_tab
 from modules.simulated_trading_history import build_history_tab
@@ -44,7 +44,7 @@ def create_xforge_app():
                 label="XAI_API_KEY (or GROK_API_KEY)",
                 type="password",
                 placeholder="sk-...",
-                value=os.getenv("XAI_API_KEY", ""),
+                value=XAI_API_KEY or "",
                 interactive=True
             )
             validate_btn = gr.Button("Validate & Save Key", variant="primary")
