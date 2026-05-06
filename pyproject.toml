@@ -1,21 +1,54 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "xforge-trader"
-version = "2.0.0"
-description = "XForge Trader + SIM - Self-improving algorithmic trading system"
-requires-python = ">=3.11"
+version = "9.2.0"
+description = "Self-Improving Autonomous Trading Intelligence powered by Grok (xAI)"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.10"
+authors = [{name = "JeffStone69"}]
 dependencies = [
-    "gradio>=5.0.0",
+    "gradio>=5.0",
     "yfinance",
     "pandas",
     "numpy",
     "pandas-ta",
     "plotly",
     "openai",
-    "pydantic",
+    "pydantic>=2.0",
     "requests",
-    "tenacity"
+    "tenacity",
+    "ib_insync",
+    "python-dotenv",
+    "tweepy",
 ]
+
 [project.optional-dependencies]
-dev = ["ruff", "mypy", "pytest", "black"]
-[tool.setuptools]
-packages = ["FORGE", "modules", "Self-Improve"]
+dev = [
+    "pytest",
+    "ruff",
+    "mypy",
+    "black",
+]
+
+[project.scripts]
+xforge = "launcher:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["FORGE*", "modules*", "sim*", "utils*", "config*"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.mypy]
+python_version = "3.10"
+strict = true
+
+[tool.black]
+line-length = 100
+target-version = ['py310']
