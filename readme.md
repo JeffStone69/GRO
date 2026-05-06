@@ -1,4 +1,4 @@
-# XForge Trader + SIM
+# XForge
 
 ## Professional Algorithmic Trading Workstation with Self-Improving AI
 
@@ -22,7 +22,7 @@ cd xforge-trader
 
 ### Step 2: Install Dependencies
 ```bash
-pip install -e .
+pip install -e 
 ```
 
 ### Step 3: Configure Environment
