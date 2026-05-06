@@ -1,16 +1,19 @@
-gradio>=5.0.0
+gradio>=5.0
 yfinance
 pandas
 numpy
 pandas-ta
 plotly
 openai
-pydantic
+pydantic>=2.0
 requests
 tenacity
+ib_insync
+python-dotenv
+tweepy
 
 [dev]
+pytest
 ruff
 mypy
-pytest
 black

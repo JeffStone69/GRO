@@ -41,6 +41,20 @@ xforge = "launcher:main"
 where = ["."]
 include = ["FORGE*", "modules*", "sim*", "utils*", "config*"]
 
+# ====================== UV OPTIMIZATIONS ======================
+[tool.uv]
+dev-dependencies = [
+    "pytest",
+    "ruff",
+    "mypy",
+    "black",
+]
+
+[tool.uv.sources]
+# Pin to latest stable versions for faster resolution
+gradio = { git = "https://github.com/gradio-app/gradio.git", rev = "main" }
+
+# ====================== LINTERS & FORMATTERS ======================
 [tool.ruff]
 line-length = 100
 target-version = "py310"
