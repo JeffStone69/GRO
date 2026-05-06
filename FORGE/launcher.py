@@ -1,86 +1,121 @@
 #!/usr/bin/env python3
 """
-XForge Trader v8.0 Launcher
-- Splash screen with logo
-- Grok (xAI) API key prompt on first run
-- Launches main app
+XForge Trader Launcher v9.2 Beta – Final
+- Interactive menu: Update or Run
+- Silent terminal on choice 2
+- LOGO-SIM.jpeg splash
+- Full logging
 """
 
-import os
+import tkinter as tk
+from tkinter import PhotoImage
 import subprocess
 import sys
-import tkinter as tk
-from tkinter import messagebox
+import time
+import os
+import logging
+from pathlib import Path
 
-try:
-    from PIL import Image, ImageTk
-    HAS_PIL = True
-except ImportError:
-    HAS_PIL = False
+log_file = Path(__file__).parent / "XForge_Beta.log"
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s | %(levelname)s | %(message)s",
+    handlers=[logging.FileHandler(log_file, mode="a"), logging.StreamHandler(sys.stdout)]
+)
+logger = logging.getLogger("XForgeLauncher")
 
-def show_splash_and_launch():
+def get_screen_info():
     root = tk.Tk()
-    root.title("XForge Trader v8.0")
-    root.geometry("460x340")
-    root.configure(bg="#0a0a0a")
+    w, h = root.winfo_screenwidth(), root.winfo_screenheight()
+    root.destroy()
+    return w, h
 
-    if HAS_PIL and os.path.exists("SMI-LOGO.jpeg"):
+def show_splash():
+    splash = tk.Tk()
+    splash.title("XForge Trader v9.2 Beta")
+    splash.configure(bg="#0a0f1a")
+    splash.overrideredirect(True)
+
+    screen_w, screen_h = get_screen_info()
+    splash_w = min(max(900, int(screen_w * 0.48)), 1300)
+    splash_h = min(max(580, int(screen_h * 0.48)), 850)
+    splash.geometry(f"{splash_w}x{splash_h}")
+    x = (screen_w - splash_w) // 2
+    y = (screen_h - splash_h) // 2
+    splash.geometry(f"+{x}+{y}")
+
+    logo_path = Path(__file__).parent / "LOGO-SIM.jpeg"
+    if logo_path.exists():
         try:
-            img = Image.open("SMI-LOGO.jpeg")
-            img = img.resize((400, 180), Image.Resampling.LANCZOS)
-            photo = ImageTk.PhotoImage(img)
-            label = tk.Label(root, image=photo, bg="#0a0a0a")
-            label.image = photo
-            label.pack(pady=20)
-        except:
-            pass
+            logo = PhotoImage(file=str(logo_path))
+            tk.Label(splash, image=logo, bg="#0a0f1a").pack(pady=25)
+        except Exception:
+            tk.Label(splash, text="XFORGE TRADER", font=("Helvetica", 52, "bold"), bg="#0a0f1a", fg="#22c55e").pack(pady=30)
     else:
-        tk.Label(root, text="🚀 XFORGE TRADER v8.0\nGrok-Powered • TSLA Focused", 
-                 font=("Arial", 18, "bold"), fg="#00ffcc", bg="#0a0a0a").pack(pady=60)
+        tk.Label(splash, text="XFORGE TRADER", font=("Helvetica", 52, "bold"), bg="#0a0f1a", fg="#22c55e").pack(pady=30)
 
-    status = tk.Label(root, text="Initializing...", fg="white", bg="#0a0a0a", font=("Arial", 10))
-    status.pack(pady=10)
+    tk.Label(splash, text="v9.2 Beta • Self-Improving Autonomous Trading Intelligence",
+             font=("Helvetica", 18, "italic"), bg="#0a0f1a", fg="#a5b4fc").pack(pady=10)
 
-    def proceed():
-        root.destroy()
-        # Grok API Key handling
-        if not os.getenv("GROK_API_KEY"):
-            key_win = tk.Tk()
-            key_win.title("xAI Grok API Key Required")
-            key_win.geometry("500x220")
-            key_win.configure(bg="#111111")
+    status_frame = tk.Frame(splash, bg="#111827", relief="sunken", bd=4)
+    status_frame.pack(pady=25, padx=80, fill="x")
+    status_label = tk.Label(status_frame, text="Initializing secure environment...",
+                            font=("Helvetica", 18, "bold"), bg="#111827", fg="#22c55e")
+    status_label.pack(pady=35)
 
-            tk.Label(key_win, text="Enter your xAI Grok API Key\n(starts with gsk_ or xai-)", 
-                     fg="#00ffcc", bg="#111111", font=("Arial", 12)).pack(pady=20)
-            
-            entry = tk.Entry(key_win, width=60, show="*", font=("Arial", 11))
-            entry.pack(pady=5)
+    def update_progress():
+        messages = ["Loading LOGO-SIM...", "Preparing environment...", "Launching XForge..."]
+        for msg in messages:
+            status_label.config(text=msg)
+            splash.update()
+            time.sleep(0.7)
+            logger.info(msg)
+        splash.destroy()
 
-            def save_key():
-                key = entry.get().strip()
-                if not key:
-                    messagebox.showerror("Error", "API key is required!")
-                    return
-                os.environ["GROK_API_KEY"] = key
-                try:
-                    with open(".env", "a") as f:
-                        f.write(f"GROK_API_KEY={key}\n")
-                except:
-                    pass
-                messagebox.showinfo("Success", "Key saved! Launching main application...")
-                key_win.destroy()
-                subprocess.Popen([sys.executable, "xforge_trader.py"])
-                sys.exit(0)
+    splash.after(200, update_progress)
+    splash.mainloop()
 
-            tk.Button(key_win, text="Save Key & Launch", command=save_key, 
-                      bg="#00cc66", fg="white", font=("Arial", 11, "bold")).pack(pady=15)
-            key_win.mainloop()
-        else:
-            subprocess.Popen([sys.executable, "xforge_trader.py"])
-            sys.exit(0)
+def launch_with_choice():
+    print("\nXForge Trader v9.2 Beta – Choose Option:")
+    print("1. Update everything (fresh venv + reinstall dependencies + reset databases)")
+    print("2. Run final XForge Trader (fast launch – recommended)")
+    choice = input("Enter choice [1/2]: ").strip()
 
-    root.after(1800, proceed)
-    root.mainloop()
+    script_dir = Path(__file__).parent
+    main_script = script_dir / "FORGE" / "xforge_trader.py"
+
+    if choice == "1":
+        logger.info("User chose UPDATE mode")
+        update_cmd = [sys.executable, "-m", "pip", "install", "-r", str(script_dir / "FORGE" / "requirements.txt")]
+        subprocess.run(update_cmd)
+        print("Update complete. Now running the app...")
+        choice = "2"
+
+    if choice == "2":
+        os.environ["XFORGE_FULLSCREEN"] = "true"
+        os.environ["XFORGE_LARGE_TEXT"] = "true"
+        os.environ["XFORGE_BETA"] = "true"
+
+        cmd = [sys.executable, str(main_script)]
+        startupinfo = None
+        creationflags = 0
+        if sys.platform == "win32":
+            startupinfo = subprocess.STARTUPINFO()
+            startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+            startupinfo.wShowWindow = 0
+            creationflags = subprocess.CREATE_NO_WINDOW
+
+        try:
+            subprocess.Popen(cmd, startupinfo=startupinfo, creationflags=creationflags)
+            logger.info("XForge Trader v9.2 Beta launched silently in new browser window.")
+        except Exception as e:
+            logger.error(f"Launch failed: {e}")
+            sys.exit(1)
+    else:
+        print("Invalid choice. Exiting.")
+        sys.exit(1)
 
 if __name__ == "__main__":
-    show_splash_and_launch()
+    logger.info("=== XForge Trader v9.2 Beta Launch Started ===")
+    show_splash()
+    launch_with_choice()
