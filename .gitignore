@@ -8,3 +8,4 @@ xforge_config.json
 *api_key*
 *secret*
 *key*
+.env.example
