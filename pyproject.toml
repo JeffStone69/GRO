@@ -1,0 +1,21 @@
+[project]
+name = "xforge-trader"
+version = "2.0.0"
+description = "XForge Trader + SIM - Self-improving algorithmic trading system"
+requires-python = ">=3.11"
+dependencies = [
+    "gradio>=5.0.0",
+    "yfinance",
+    "pandas",
+    "numpy",
+    "pandas-ta",
+    "plotly",
+    "openai",
+    "pydantic",
+    "requests",
+    "tenacity"
+]
+[project.optional-dependencies]
+dev = ["ruff", "mypy", "pytest", "black"]
+[tool.setuptools]
+packages = ["FORGE", "modules", "Self-Improve"]
