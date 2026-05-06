@@ -1,12 +1,42 @@
-# XForge Trading System – Evolutionary Intelligence in Motion
+# XForge Trader + SIM
 
-From a single launcher.py seed, the GRO repository has evolved into a complete algorithmic trading ecosystem. Born from iterative self-improvement cycles and real-time market adaptation, XForge now stands as a living, breathing framework for precision trading on Apple macOS.
+## Professional Algorithmic Trading Workstation with Self-Improving AI
 
-**Core Architecture**  
-• **launch.command** – Your single double-click entry point. This macOS-native script rewrites the entire directory structure, regenerates xforge_historical.db and self-improvement databases, sets up a clean Python virtual environment, installs dependencies, and launches the full system.  
-• **launcher.py** – The intelligent orchestrator that dynamically loads modules, initializes Gradio UI with Profit Scanner, Technical Chart, Backtester, Forward Predictor, Grok Self-Improve, IBKR Integration, and Strategy Optimizer tabs.  
-• **FORGE/** (xforge_trader.py + supporting scripts) – The heart of real-time trading logic, incorporating latest fixes for database management, Plotly visualization, and error-resilient execution.  
-• **modules/**, **Self-Improve/** – Dynamic workspaces for strategy evolution, multi-ticker watchlists, simulated trading history, and autonomous Grok-powered enhancements.  
-• **Databases & Logs** – Persistent SQLite stores that regenerate fresh on every clean install.
+**Version:** 2.0 (Rewritten per Project Blueprint)
 
-Every commit reflects evolutionary progress — from early FORGE experiments to v8.7 portfolio rebalancing and full IBKR connectivity. Clone, double-click launch.command (after chmod +x), and watch the system self-assemble into a production-ready trading powerhouse.
+XForge Trader is a modular, self-improving algorithmic trading system for macOS, featuring real-time multi-ticker monitoring, strategy optimization, paper trading, and Grok-powered autonomous code improvement.
+
+## Installation Documentation
+
+### Prerequisites
+- Python 3.11 or higher
+- macOS (recommended for launchers)
+- GitHub account with repository access
+- xAI API key (for SIM self-improvement)
+
+### Step 1: Clone the Repository
+```bash
+git clone https://github.com/JeffStone69/GRO.git xforge-trader
+cd xforge-trader
+```
+
+### Step 2: Install Dependencies
+```bash
+pip install -e .
+```
+
+### Step 3: Configure Environment
+Copy `.env.example` to `.env` and set your `XAI_API_KEY`.
+
+### Step 4: Launch the Application
+Double-click `launch.command` for macOS splash screen launcher.
+
+The Gradio interface will open automatically.
+
+## Project Files Created/Updated
+- Full modules in `modules/`
+- Complete FORGE core in `FORGE/`
+- Self-Improve engine
+- Launcher and workflows
+
+See PROJECT_BLUEPRINT.md for architecture and directory structure.
