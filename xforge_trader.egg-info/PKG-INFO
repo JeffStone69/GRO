@@ -1,0 +1,20 @@
+Metadata-Version: 2.4
+Name: xforge-trader
+Version: 2.0.0
+Summary: XForge Trader + SIM - Self-improving algorithmic trading system
+Requires-Python: >=3.11
+Requires-Dist: gradio>=5.0.0
+Requires-Dist: yfinance
+Requires-Dist: pandas
+Requires-Dist: numpy
+Requires-Dist: pandas-ta
+Requires-Dist: plotly
+Requires-Dist: openai
+Requires-Dist: pydantic
+Requires-Dist: requests
+Requires-Dist: tenacity
+Provides-Extra: dev
+Requires-Dist: ruff; extra == "dev"
+Requires-Dist: mypy; extra == "dev"
+Requires-Dist: pytest; extra == "dev"
+Requires-Dist: black; extra == "dev"

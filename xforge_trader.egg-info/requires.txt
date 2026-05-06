@@ -1,0 +1,16 @@
+gradio>=5.0.0
+yfinance
+pandas
+numpy
+pandas-ta
+plotly
+openai
+pydantic
+requests
+tenacity
+
+[dev]
+ruff
+mypy
+pytest
+black

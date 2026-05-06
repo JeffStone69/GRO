@@ -1,0 +1,15 @@
+README.md
+pyproject.toml
+FORGE/config.py
+FORGE/launcher.py
+FORGE/utils.py
+FORGE/xforge_trader.py
+Self-Improve/SIM.py
+modules/multi_ticker_watchlist.py
+modules/simulated_trading_history.py
+modules/strategy_optimizer.py
+xforge_trader.egg-info/PKG-INFO
+xforge_trader.egg-info/SOURCES.txt
+xforge_trader.egg-info/dependency_links.txt
+xforge_trader.egg-info/requires.txt
+xforge_trader.egg-info/top_level.txt
