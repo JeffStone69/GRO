@@ -1,0 +1,145 @@
+2026-05-10 06:24:02,096 | INFO | XForge | Database initialized successfully
+2026-05-10 06:24:02,097 | INFO | XForge | Starting XForge on port 8050
+2026-05-10 06:27:51,876 | INFO | XForge | Database initialized successfully
+2026-05-10 06:27:51,877 | INFO | XForge | Starting XForge on port 8050
+2026-05-10 06:27:51,877 | INFO | dash.dash | Dash is running on http://0.0.0.0:8050/
+
+2026-05-10 06:27:51,896 | INFO | werkzeug | [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:8050
+ * Running on http://192.168.1.115:8050
+2026-05-10 06:27:51,896 | INFO | werkzeug | [33mPress CTRL+C to quit[0m
+2026-05-10 06:28:00,483 | INFO | werkzeug | 192.168.1.115 - - [10/May/2026 06:28:00] "GET / HTTP/1.1" 200 -
+2026-05-10 06:28:00,512 | INFO | werkzeug | 192.168.1.115 - - [10/May/2026 06:28:00] "GET /_dash-component-suites/dash/deps/polyfill@7.v4_1_0m1778358237.12.1.min.js HTTP/1.1" 200 -
+2026-05-10 06:28:00,541 | INFO | werkzeug | 192.168.1.115 - - [10/May/2026 06:28:00] "GET /_dash-component-suites/dash/deps/react@18.v4_1_0m1778358237.3.1.min.js HTTP/1.1" 200 -
+2026-05-10 06:28:00,545 | INFO | werkzeug | 192.168.1.115 - - [10/May/2026 06:28:00] "GET /_dash-component-suites/dash/deps/react-dom@18.v4_1_0m1778358237.3.1.min.js HTTP/1.1" 200 -
+2026-05-10 06:28:00,555 | INFO | werkzeug | 192.168.1.115 - - [10/May/2026 06:28:00] "GET /_dash-component-suites/dash/deps/prop-types@15.v4_1_0m1778358237.8.1.min.js HTTP/1.1" 200 -
+2026-05-10 06:28:00,564 | INFO | werkzeug | 192.168.1.115 - - [10/May/2026 06:28:00] "GET /_dash-component-suites/dash/dash-renderer/build/dash_renderer.v4_1_0m1778358236.min.js HTTP/1.1" 200 -
+2026-05-10 06:28:00,571 | INFO | werkzeug | 192.168.1.115 - - [10/May/2026 06:28:00] "GET /_dash-component-suites/dash/dcc/dash_core_components.v4_1_0m1778358237.js HTTP/1.1" 200 -
+2026-05-10 06:28:00,595 | INFO | werkzeug | 192.168.1.115 - - [10/May/2026 06:28:00] "GET /_dash-component-suites/dash/dcc/dash_core_components-shared.v4_1_0m1778358237.js HTTP/1.1" 200 -
+2026-05-10 06:28:00,608 | INFO | werkzeug | 192.168.1.115 - - [10/May/2026 06:28:00] "GET /_dash-component-suites/dash/html/dash_html_components.v4_1_0m1778358237.min.js HTTP/1.1" 200 -
+2026-05-10 06:28:00,613 | INFO | werkzeug | 192.168.1.115 - - [10/May/2026 06:28:00] "GET /_dash-component-suites/dash/dash_table/bundle.v7_1_0m1778358237.js HTTP/1.1" 200 -
+2026-05-10 06:28:00,687 | INFO | werkzeug | 192.168.1.115 - - [10/May/2026 06:28:00] "GET /_dash-layout HTTP/1.1" 200 -
+2026-05-10 06:28:00,688 | INFO | werkzeug | 192.168.1.115 - - [10/May/2026 06:28:00] "GET /_dash-dependencies HTTP/1.1" 200 -
+2026-05-10 06:28:00,721 | INFO | werkzeug | 192.168.1.115 - - [10/May/2026 06:28:00] "GET /_dash-component-suites/dash/dcc/async-dropdown.js HTTP/1.1" 200 -
+2026-05-10 06:28:00,726 | INFO | werkzeug | 192.168.1.115 - - [10/May/2026 06:28:00] "GET /_dash-component-suites/dash/dcc/async-datepicker.js HTTP/1.1" 200 -
+2026-05-10 06:28:00,731 | INFO | werkzeug | 192.168.1.115 - - [10/May/2026 06:28:00] "GET /_dash-component-suites/dash/dcc/async-graph.js HTTP/1.1" 200 -
+2026-05-10 06:28:00,736 | INFO | werkzeug | 192.168.1.115 - - [10/May/2026 06:28:00] "GET /_dash-component-suites/dash/dash_table/async-highlight.js HTTP/1.1" 200 -
+2026-05-10 06:28:00,743 | INFO | werkzeug | 192.168.1.115 - - [10/May/2026 06:28:00] "GET /_dash-component-suites/dash/dash_table/async-table.js HTTP/1.1" 200 -
+2026-05-10 06:28:00,744 | INFO | werkzeug | 192.168.1.115 - - [10/May/2026 06:28:00] "GET /_dash-component-suites/plotly/package_data/plotly.min.js HTTP/1.1" 200 -
+2026-05-10 06:28:00,801 | INFO | XForge | Database initialized successfully
+2026-05-10 06:28:00,804 | INFO | werkzeug | 192.168.1.115 - - [10/May/2026 06:28:00] "POST /_dash-update-component HTTP/1.1" 200 -
+2026-05-10 06:28:00,809 | INFO | werkzeug | 192.168.1.115 - - [10/May/2026 06:28:00] "GET /_favicon.ico?v=4.1.0 HTTP/1.1" 200 -
+2026-05-10 06:28:00,814 | INFO | XForge | Added ticker: TSLA
+2026-05-10 06:28:00,822 | INFO | XForge | Added ticker: NVDA
+2026-05-10 06:28:00,870 | INFO | XForge | Added ticker: AAPL
+2026-05-10 06:28:00,872 | INFO | werkzeug | 192.168.1.115 - - [10/May/2026 06:28:00] "POST /_dash-update-component HTTP/1.1" 200 -
+2026-05-10 06:28:00,886 | INFO | werkzeug | 192.168.1.115 - - [10/May/2026 06:28:00] "POST /_dash-update-component HTTP/1.1" 200 -
+2026-05-10 06:28:05,007 | INFO | XForge | Fetching TSLA data...
+2026-05-10 06:28:05,924 | INFO | XForge | Stored 1256 rows for TSLA
+2026-05-10 06:28:05,925 | INFO | XForge | Fetching NVDA data...
+2026-05-10 06:28:06,352 | INFO | XForge | Stored 1256 rows for NVDA
+2026-05-10 06:28:06,495 | INFO | werkzeug | 192.168.1.115 - - [10/May/2026 06:28:06] "POST /_dash-update-component HTTP/1.1" 200 -
+2026-05-10 06:28:12,923 | INFO | XForge | Fetching TSLA data...
+2026-05-10 06:28:13,324 | ERROR | XForge | Database error: Execution failed
+2026-05-10 06:28:13,326 | ERROR | XForge | Fetch error for TSLA: Execution failed
+2026-05-10 06:28:13,352 | INFO | werkzeug | 192.168.1.115 - - [10/May/2026 06:28:13] "POST /_dash-update-component HTTP/1.1" 200 -
+2026-05-10 06:28:16,145 | INFO | XForge | Fetching TSLA data...
+2026-05-10 06:28:16,545 | ERROR | XForge | Database error: Execution failed
+2026-05-10 06:28:16,546 | ERROR | XForge | Fetch error for TSLA: Execution failed
+2026-05-10 06:28:16,547 | INFO | XForge | Fetching NVDA data...
+2026-05-10 06:28:16,635 | ERROR | XForge | Database error: Execution failed
+2026-05-10 06:28:16,636 | ERROR | XForge | Fetch error for NVDA: Execution failed
+2026-05-10 06:28:16,671 | INFO | werkzeug | 192.168.1.115 - - [10/May/2026 06:28:16] "POST /_dash-update-component HTTP/1.1" 200 -
+2026-05-10 06:28:19,343 | INFO | XForge | Fetching TSLA data...
+2026-05-10 06:28:19,675 | ERROR | XForge | Database error: Execution failed
+2026-05-10 06:28:19,676 | ERROR | XForge | Fetch error for TSLA: Execution failed
+2026-05-10 06:28:19,677 | INFO | XForge | Fetching NVDA data...
+2026-05-10 06:28:19,896 | ERROR | XForge | Database error: Execution failed
+2026-05-10 06:28:19,897 | ERROR | XForge | Fetch error for NVDA: Execution failed
+2026-05-10 06:28:19,898 | INFO | XForge | Fetching AAPL data...
+2026-05-10 06:28:20,223 | INFO | XForge | Stored 1256 rows for AAPL
+2026-05-10 06:28:20,270 | INFO | werkzeug | 192.168.1.115 - - [10/May/2026 06:28:20] "POST /_dash-update-component HTTP/1.1" 200 -
+2026-05-10 06:28:30,765 | INFO | XForge | Database initialized successfully
+2026-05-10 06:28:30,768 | INFO | werkzeug | 192.168.1.115 - - [10/May/2026 06:28:30] "POST /_dash-update-component HTTP/1.1" 200 -
+2026-05-10 06:28:43,191 | INFO | XForge | Fetching TSLA data...
+2026-05-10 06:28:43,566 | ERROR | XForge | Database error: Execution failed
+2026-05-10 06:28:43,567 | ERROR | XForge | Fetch error for TSLA: Execution failed
+2026-05-10 06:28:43,567 | INFO | XForge | Fetching NVDA data...
+2026-05-10 06:28:43,775 | ERROR | XForge | Database error: Execution failed
+2026-05-10 06:28:43,776 | ERROR | XForge | Fetch error for NVDA: Execution failed
+2026-05-10 06:28:43,814 | INFO | werkzeug | 192.168.1.115 - - [10/May/2026 06:28:43] "POST /_dash-update-component HTTP/1.1" 200 -
+2026-05-10 06:29:00,744 | INFO | XForge | Database initialized successfully
+2026-05-10 06:29:00,747 | INFO | werkzeug | 192.168.1.115 - - [10/May/2026 06:29:00] "POST /_dash-update-component HTTP/1.1" 200 -
+2026-05-10 06:29:30,744 | INFO | XForge | Database initialized successfully
+2026-05-10 06:29:30,746 | INFO | werkzeug | 192.168.1.115 - - [10/May/2026 06:29:30] "POST /_dash-update-component HTTP/1.1" 200 -
+2026-05-10 06:30:00,743 | INFO | XForge | Database initialized successfully
+2026-05-10 06:30:00,745 | INFO | werkzeug | 192.168.1.115 - - [10/May/2026 06:30:00] "POST /_dash-update-component HTTP/1.1" 200 -
+2026-05-10 06:30:30,740 | INFO | XForge | Database initialized successfully
+2026-05-10 06:30:30,742 | INFO | werkzeug | 192.168.1.115 - - [10/May/2026 06:30:30] "POST /_dash-update-component HTTP/1.1" 200 -
+2026-05-10 06:31:00,738 | INFO | XForge | Database initialized successfully
+2026-05-10 06:31:00,741 | INFO | werkzeug | 192.168.1.115 - - [10/May/2026 06:31:00] "POST /_dash-update-component HTTP/1.1" 200 -
+2026-05-10 06:31:30,738 | INFO | XForge | Database initialized successfully
+2026-05-10 06:31:30,740 | INFO | werkzeug | 192.168.1.115 - - [10/May/2026 06:31:30] "POST /_dash-update-component HTTP/1.1" 200 -
+2026-05-10 06:32:00,735 | INFO | XForge | Database initialized successfully
+2026-05-10 06:32:00,737 | INFO | werkzeug | 192.168.1.115 - - [10/May/2026 06:32:00] "POST /_dash-update-component HTTP/1.1" 200 -
+2026-05-10 06:32:30,736 | INFO | XForge | Database initialized successfully
+2026-05-10 06:32:30,738 | INFO | werkzeug | 192.168.1.115 - - [10/May/2026 06:32:30] "POST /_dash-update-component HTTP/1.1" 200 -
+2026-05-10 06:33:00,732 | INFO | XForge | Database initialized successfully
+2026-05-10 06:33:00,735 | INFO | werkzeug | 192.168.1.115 - - [10/May/2026 06:33:00] "POST /_dash-update-component HTTP/1.1" 200 -
+2026-05-10 06:33:30,730 | INFO | XForge | Database initialized successfully
+2026-05-10 06:33:30,732 | INFO | werkzeug | 192.168.1.115 - - [10/May/2026 06:33:30] "POST /_dash-update-component HTTP/1.1" 200 -
+2026-05-10 06:34:00,732 | INFO | XForge | Database initialized successfully
+2026-05-10 06:34:00,735 | INFO | werkzeug | 192.168.1.115 - - [10/May/2026 06:34:00] "POST /_dash-update-component HTTP/1.1" 200 -
+2026-05-10 06:34:30,729 | INFO | XForge | Database initialized successfully
+2026-05-10 06:34:30,731 | INFO | werkzeug | 192.168.1.115 - - [10/May/2026 06:34:30] "POST /_dash-update-component HTTP/1.1" 200 -
+2026-05-10 06:35:00,726 | INFO | XForge | Database initialized successfully
+2026-05-10 06:35:00,729 | INFO | werkzeug | 192.168.1.115 - - [10/May/2026 06:35:00] "POST /_dash-update-component HTTP/1.1" 200 -
+2026-05-10 06:35:30,724 | INFO | XForge | Database initialized successfully
+2026-05-10 06:35:30,726 | INFO | werkzeug | 192.168.1.115 - - [10/May/2026 06:35:30] "POST /_dash-update-component HTTP/1.1" 200 -
+2026-05-10 06:36:00,721 | INFO | XForge | Database initialized successfully
+2026-05-10 06:36:00,724 | INFO | werkzeug | 192.168.1.115 - - [10/May/2026 06:36:00] "POST /_dash-update-component HTTP/1.1" 200 -
+2026-05-10 06:36:30,719 | INFO | XForge | Database initialized successfully
+2026-05-10 06:36:30,721 | INFO | werkzeug | 192.168.1.115 - - [10/May/2026 06:36:30] "POST /_dash-update-component HTTP/1.1" 200 -
+2026-05-10 06:37:00,773 | INFO | XForge | Database initialized successfully
+2026-05-10 06:37:00,776 | INFO | werkzeug | 192.168.1.115 - - [10/May/2026 06:37:00] "POST /_dash-update-component HTTP/1.1" 200 -
+2026-05-10 06:37:30,760 | INFO | XForge | Database initialized successfully
+2026-05-10 06:37:30,762 | INFO | werkzeug | 192.168.1.115 - - [10/May/2026 06:37:30] "POST /_dash-update-component HTTP/1.1" 200 -
+2026-05-10 06:38:00,761 | INFO | XForge | Database initialized successfully
+2026-05-10 06:38:00,763 | INFO | werkzeug | 192.168.1.115 - - [10/May/2026 06:38:00] "POST /_dash-update-component HTTP/1.1" 200 -
+2026-05-10 06:38:30,758 | INFO | XForge | Database initialized successfully
+2026-05-10 06:38:30,761 | INFO | werkzeug | 192.168.1.115 - - [10/May/2026 06:38:30] "POST /_dash-update-component HTTP/1.1" 200 -
+2026-05-10 06:39:00,754 | INFO | XForge | Database initialized successfully
+2026-05-10 06:39:00,757 | INFO | werkzeug | 192.168.1.115 - - [10/May/2026 06:39:00] "POST /_dash-update-component HTTP/1.1" 200 -
+2026-05-10 06:39:20,048 | INFO | XForge | Fetching TSLA data...
+2026-05-10 06:39:20,467 | ERROR | XForge | Database error: Execution failed
+2026-05-10 06:39:20,468 | ERROR | XForge | Fetch error for TSLA: Execution failed
+2026-05-10 06:39:20,468 | INFO | XForge | Fetching NVDA data...
+2026-05-10 06:39:20,907 | ERROR | XForge | Database error: Execution failed
+2026-05-10 06:39:20,908 | ERROR | XForge | Fetch error for NVDA: Execution failed
+2026-05-10 06:39:20,945 | INFO | werkzeug | 192.168.1.115 - - [10/May/2026 06:39:20] "POST /_dash-update-component HTTP/1.1" 200 -
+2026-05-10 06:39:30,753 | INFO | XForge | Database initialized successfully
+2026-05-10 06:39:30,756 | INFO | werkzeug | 192.168.1.115 - - [10/May/2026 06:39:30] "POST /_dash-update-component HTTP/1.1" 200 -
+2026-05-10 06:39:42,300 | INFO | XForge | Fetching TSLA data...
+2026-05-10 06:39:42,664 | ERROR | XForge | Database error: Execution failed
+2026-05-10 06:39:42,666 | ERROR | XForge | Fetch error for TSLA: Execution failed
+2026-05-10 06:39:42,666 | INFO | XForge | Fetching NVDA data...
+2026-05-10 06:39:43,047 | ERROR | XForge | Database error: Execution failed
+2026-05-10 06:39:43,049 | ERROR | XForge | Fetch error for NVDA: Execution failed
+2026-05-10 06:39:43,084 | INFO | werkzeug | 192.168.1.115 - - [10/May/2026 06:39:43] "POST /_dash-update-component HTTP/1.1" 200 -
+2026-05-10 06:39:48,723 | INFO | XForge | Fetching TSLA data...
+2026-05-10 06:39:49,081 | ERROR | XForge | Database error: Execution failed
+2026-05-10 06:39:49,082 | ERROR | XForge | Fetch error for TSLA: Execution failed
+2026-05-10 06:39:49,082 | INFO | XForge | Fetching NVDA data...
+2026-05-10 06:39:49,371 | ERROR | XForge | Database error: Execution failed
+2026-05-10 06:39:49,372 | ERROR | XForge | Fetch error for NVDA: Execution failed
+2026-05-10 06:39:49,410 | INFO | werkzeug | 192.168.1.115 - - [10/May/2026 06:39:49] "POST /_dash-update-component HTTP/1.1" 200 -
+2026-05-10 06:40:00,754 | INFO | XForge | Database initialized successfully
+2026-05-10 06:40:00,757 | INFO | werkzeug | 192.168.1.115 - - [10/May/2026 06:40:00] "POST /_dash-update-component HTTP/1.1" 200 -
+2026-05-10 06:40:30,826 | INFO | XForge | Database initialized successfully
+2026-05-10 06:40:30,829 | INFO | werkzeug | 192.168.1.115 - - [10/May/2026 06:40:30] "POST /_dash-update-component HTTP/1.1" 200 -
+2026-05-10 06:40:50,491 | ERROR | XForge | GitHub sync failed: /Users/jeff/Downloads/XAi/GIT/Xapp/xforge/github_sync/xforge_repo
+2026-05-10 06:40:50,492 | INFO | werkzeug | 192.168.1.115 - - [10/May/2026 06:40:50] "POST /_dash-update-component HTTP/1.1" 200 -
+2026-05-10 06:41:00,826 | INFO | XForge | Database initialized successfully
+2026-05-10 06:41:00,829 | INFO | werkzeug | 192.168.1.115 - - [10/May/2026 06:41:00] "POST /_dash-update-component HTTP/1.1" 200 -
+2026-05-10 06:41:05,482 | INFO | XForge | Repository cloned
