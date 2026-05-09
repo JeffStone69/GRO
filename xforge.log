@@ -169,3 +169,611 @@
 2026-05-10 06:42:30,858 | INFO | werkzeug | 192.168.1.115 - - [10/May/2026 06:42:30] "POST /_dash-update-component HTTP/1.1" 200 -
 2026-05-10 06:42:30,858 | INFO | XForge | Database initialized successfully
 2026-05-10 06:42:30,862 | INFO | werkzeug | 192.168.1.115 - - [10/May/2026 06:42:30] "POST /_dash-update-component HTTP/1.1" 200 -
+2026-05-10 06:42:53,591 | INFO | XForge | Pushed to GitHub successfully
+2026-05-10 06:42:53,592 | INFO | werkzeug | 192.168.1.115 - - [10/May/2026 06:42:53] "POST /_dash-update-component HTTP/1.1" 200 -
+2026-05-10 06:42:57,980 | INFO | XForge | Fetching TSLA data...
+2026-05-10 06:42:58,386 | ERROR | XForge | Database error: Execution failed
+2026-05-10 06:42:58,387 | ERROR | XForge | Fetch error for TSLA: Execution failed
+2026-05-10 06:42:58,387 | INFO | XForge | Fetching NVDA data...
+2026-05-10 06:42:58,600 | ERROR | XForge | Database error: Execution failed
+2026-05-10 06:42:58,601 | ERROR | XForge | Fetch error for NVDA: Execution failed
+2026-05-10 06:42:58,672 | INFO | werkzeug | 192.168.1.115 - - [10/May/2026 06:42:58] "POST /_dash-update-component HTTP/1.1" 200 -
+2026-05-10 06:43:00,825 | INFO | XForge | Database initialized successfully
+2026-05-10 06:43:00,827 | INFO | werkzeug | 192.168.1.115 - - [10/May/2026 06:43:00] "POST /_dash-update-component HTTP/1.1" 200 -
+2026-05-10 06:54:22,085 | INFO | Dash is running on http://0.0.0.0:8050/
+
+2026-05-10 06:54:45,051 | INFO | Dash is running on http://0.0.0.0:8050/
+
+2026-05-10 06:54:45,063 | INFO | [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:8050
+ * Running on http://192.168.1.115:8050
+2026-05-10 06:54:45,063 | INFO | [33mPress CTRL+C to quit[0m
+2026-05-10 06:54:53,606 | INFO | 192.168.1.115 - - [10/May/2026 06:54:53] "GET / HTTP/1.1" 200 -
+2026-05-10 06:54:53,777 | INFO | 192.168.1.115 - - [10/May/2026 06:54:53] "GET /_dash-layout HTTP/1.1" 200 -
+2026-05-10 06:54:53,779 | INFO | 192.168.1.115 - - [10/May/2026 06:54:53] "GET /_dash-dependencies HTTP/1.1" 200 -
+2026-05-10 06:54:53,808 | INFO | 192.168.1.115 - - [10/May/2026 06:54:53] "[36mGET /_dash-component-suites/dash/dcc/async-dropdown.js HTTP/1.1[0m" 304 -
+2026-05-10 06:54:53,813 | INFO | 192.168.1.115 - - [10/May/2026 06:54:53] "[36mGET /_dash-component-suites/dash/dcc/async-datepicker.js HTTP/1.1[0m" 304 -
+2026-05-10 06:54:53,820 | INFO | 192.168.1.115 - - [10/May/2026 06:54:53] "[36mGET /_dash-component-suites/dash/dcc/async-graph.js HTTP/1.1[0m" 304 -
+2026-05-10 06:54:53,828 | INFO | 192.168.1.115 - - [10/May/2026 06:54:53] "[36mGET /_dash-component-suites/dash/dash_table/async-highlight.js HTTP/1.1[0m" 304 -
+2026-05-10 06:54:53,836 | INFO | 192.168.1.115 - - [10/May/2026 06:54:53] "[36mGET /_dash-component-suites/plotly/package_data/plotly.min.js HTTP/1.1[0m" 304 -
+2026-05-10 06:54:53,848 | INFO | 192.168.1.115 - - [10/May/2026 06:54:53] "[36mGET /_dash-component-suites/dash/dash_table/async-table.js HTTP/1.1[0m" 304 -
+2026-05-10 06:54:53,872 | INFO | 192.168.1.115 - - [10/May/2026 06:54:53] "POST /_dash-update-component HTTP/1.1" 200 -
+2026-05-10 06:54:53,925 | INFO | 192.168.1.115 - - [10/May/2026 06:54:53] "POST /_dash-update-component HTTP/1.1" 200 -
+2026-05-10 06:54:53,938 | INFO | 192.168.1.115 - - [10/May/2026 06:54:53] "POST /_dash-update-component HTTP/1.1" 200 -
+2026-05-10 06:55:11,929 | INFO | 192.168.1.115 - - [10/May/2026 06:55:11] "POST /_dash-update-component HTTP/1.1" 200 -
+2026-05-10 06:55:23,823 | INFO | 192.168.1.115 - - [10/May/2026 06:55:23] "POST /_dash-update-component HTTP/1.1" 200 -
+2026-05-10 06:55:26,322 | INFO | 192.168.1.115 - - [10/May/2026 06:55:26] "POST /_dash-update-component HTTP/1.1" 200 -
+2026-05-10 06:55:46,320 | INFO | 192.168.1.115 - - [10/May/2026 06:55:46] "POST /_dash-update-component HTTP/1.1" 200 -
+2026-05-10 06:55:53,870 | INFO | 192.168.1.115 - - [10/May/2026 06:55:53] "POST /_dash-update-component HTTP/1.1" 200 -
+2026-05-10 06:55:54,823 | INFO | 192.168.1.115 - - [10/May/2026 06:55:54] "POST /_dash-update-component HTTP/1.1" 200 -
+2026-05-10 06:56:04,726 | ERROR | Execution failed
+2026-05-10 06:56:04,727 | ERROR | Exception on /_dash-update-component [POST]
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/pandas/io/sql.py", line 2571, in _execute_insert
+    conn.executemany(self.insert_statement(num_rows=1), data_list)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: price_history.symbol, price_history.date
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/flask/app.py", line 1473, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/flask/app.py", line 882, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/flask/app.py", line 880, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/flask/app.py", line 865, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/dash/_get_app.py", line 17, in wrap
+    return ctx.run(func, self, *args, **kwargs)
+           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/dash/dash.py", line 1601, in dispatch
+    response_data = ctx.run(partial_func)
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/dash/_callback.py", line 720, in add_context
+    raise err
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/dash/_callback.py", line 711, in add_context
+    output_value = _invoke_callback(func, *func_args, **func_kwargs)  # type: ignore[reportArgumentType]
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/dash/_callback.py", line 58, in _invoke_callback
+    return func(*args, **kwargs)  # %% callback invoked %%
+  File "/Users/jeff/Downloads/XAi/GIT/Xapp/xforge/xforge.py", line 158, in visuals
+    for s in syms: fetch_and_store(s)
+                   ~~~~~~~~~~~~~~~^^^
+  File "/Users/jeff/Downloads/XAi/GIT/Xapp/xforge/xforge.py", line 68, in fetch_and_store
+    df[['symbol','date','open','high','low','close','volume']].to_sql('price_history', conn, if_exists='append', index=False)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/pandas/core/generic.py", line 3052, in to_sql
+    return sql.to_sql(
+           ~~~~~~~~~~^
+        self,
+        ^^^^^
+    ...<8 lines>...
+        method=method,
+        ^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/pandas/io/sql.py", line 841, in to_sql
+    return pandas_sql.to_sql(
+           ~~~~~~~~~~~~~~~~~^
+        frame,
+        ^^^^^^
+    ...<9 lines>...
+        **engine_kwargs,
+        ^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/pandas/io/sql.py", line 2880, in to_sql
+    return table.insert(chunksize, method)
+           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/pandas/io/sql.py", line 1122, in insert
+    num_inserted = exec_insert(conn, keys, chunk_iter)
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/pandas/io/sql.py", line 2573, in _execute_insert
+    raise DatabaseError("Execution failed") from exc
+pandas.errors.DatabaseError: Execution failed
+2026-05-10 06:56:04,740 | INFO | 192.168.1.115 - - [10/May/2026 06:56:04] "[35m[1mPOST /_dash-update-component HTTP/1.1[0m" 500 -
+2026-05-10 06:59:06,878 | INFO | Dash is running on http://0.0.0.0:8050/
+
+2026-05-10 06:59:06,887 | INFO | [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:8050
+ * Running on http://192.168.1.115:8050
+2026-05-10 06:59:06,887 | INFO | [33mPress CTRL+C to quit[0m
+2026-05-10 06:59:18,520 | INFO | 127.0.0.1 - - [10/May/2026 06:59:18] "GET / HTTP/1.1" 200 -
+2026-05-10 06:59:18,547 | INFO | 127.0.0.1 - - [10/May/2026 06:59:18] "GET /_dash-component-suites/dash/deps/polyfill@7.v4_1_0m1778358237.12.1.min.js HTTP/1.1" 200 -
+2026-05-10 06:59:18,553 | INFO | 127.0.0.1 - - [10/May/2026 06:59:18] "GET /_dash-component-suites/dash/deps/react@18.v4_1_0m1778358237.3.1.min.js HTTP/1.1" 200 -
+2026-05-10 06:59:18,558 | INFO | 127.0.0.1 - - [10/May/2026 06:59:18] "GET /_dash-component-suites/dash/deps/react-dom@18.v4_1_0m1778358237.3.1.min.js HTTP/1.1" 200 -
+2026-05-10 06:59:18,567 | INFO | 127.0.0.1 - - [10/May/2026 06:59:18] "GET /_dash-component-suites/dash/deps/prop-types@15.v4_1_0m1778358237.8.1.min.js HTTP/1.1" 200 -
+2026-05-10 06:59:18,567 | INFO | 127.0.0.1 - - [10/May/2026 06:59:18] "GET /_dash-component-suites/dash/dash-renderer/build/dash_renderer.v4_1_0m1778358236.min.js HTTP/1.1" 200 -
+2026-05-10 06:59:18,579 | INFO | 127.0.0.1 - - [10/May/2026 06:59:18] "GET /_dash-component-suites/dash/dcc/dash_core_components-shared.v4_1_0m1778358237.js HTTP/1.1" 200 -
+2026-05-10 06:59:18,588 | INFO | 127.0.0.1 - - [10/May/2026 06:59:18] "GET /_dash-component-suites/dash/dcc/dash_core_components.v4_1_0m1778358237.js HTTP/1.1" 200 -
+2026-05-10 06:59:18,588 | INFO | 127.0.0.1 - - [10/May/2026 06:59:18] "GET /_dash-component-suites/dash/html/dash_html_components.v4_1_0m1778358237.min.js HTTP/1.1" 200 -
+2026-05-10 06:59:18,602 | INFO | 127.0.0.1 - - [10/May/2026 06:59:18] "GET /_dash-component-suites/dash/dash_table/bundle.v7_1_0m1778358237.js HTTP/1.1" 200 -
+2026-05-10 06:59:18,691 | INFO | 127.0.0.1 - - [10/May/2026 06:59:18] "GET /_dash-layout HTTP/1.1" 200 -
+2026-05-10 06:59:18,693 | INFO | 127.0.0.1 - - [10/May/2026 06:59:18] "GET /_dash-dependencies HTTP/1.1" 200 -
+2026-05-10 06:59:18,701 | INFO | 127.0.0.1 - - [10/May/2026 06:59:18] "GET /_favicon.ico?v=4.1.0 HTTP/1.1" 200 -
+2026-05-10 06:59:18,724 | INFO | 127.0.0.1 - - [10/May/2026 06:59:18] "GET /_dash-component-suites/dash/dcc/async-dropdown.js HTTP/1.1" 200 -
+2026-05-10 06:59:18,734 | INFO | 127.0.0.1 - - [10/May/2026 06:59:18] "GET /_dash-component-suites/dash/dcc/async-graph.js HTTP/1.1" 200 -
+2026-05-10 06:59:18,735 | INFO | 127.0.0.1 - - [10/May/2026 06:59:18] "GET /_dash-component-suites/dash/dcc/async-datepicker.js HTTP/1.1" 200 -
+2026-05-10 06:59:18,753 | INFO | 127.0.0.1 - - [10/May/2026 06:59:18] "GET /_dash-component-suites/dash/dash_table/async-highlight.js HTTP/1.1" 200 -
+2026-05-10 06:59:18,754 | INFO | 127.0.0.1 - - [10/May/2026 06:59:18] "GET /_dash-component-suites/plotly/package_data/plotly.min.js HTTP/1.1" 200 -
+2026-05-10 06:59:18,754 | INFO | 127.0.0.1 - - [10/May/2026 06:59:18] "GET /_dash-component-suites/dash/dash_table/async-table.js HTTP/1.1" 200 -
+2026-05-10 06:59:18,760 | INFO | 127.0.0.1 - - [10/May/2026 06:59:18] "POST /_dash-update-component HTTP/1.1" 200 -
+2026-05-10 06:59:18,786 | INFO | 127.0.0.1 - - [10/May/2026 06:59:18] "POST /_dash-update-component HTTP/1.1" 200 -
+2026-05-10 06:59:18,790 | INFO | 127.0.0.1 - - [10/May/2026 06:59:18] "POST /_dash-update-component HTTP/1.1" 200 -
+2026-05-10 06:59:18,999 | INFO | 127.0.0.1 - - [10/May/2026 06:59:18] "POST /_dash-update-component HTTP/1.1" 200 -
+2026-05-10 06:59:23,073 | ERROR | Execution failed
+2026-05-10 06:59:23,074 | ERROR | Exception on /_dash-update-component [POST]
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/pandas/io/sql.py", line 2571, in _execute_insert
+    conn.executemany(self.insert_statement(num_rows=1), data_list)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: price_history.symbol, price_history.date
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/flask/app.py", line 1473, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/flask/app.py", line 882, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/flask/app.py", line 880, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/flask/app.py", line 865, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/dash/_get_app.py", line 17, in wrap
+    return ctx.run(func, self, *args, **kwargs)
+           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/dash/dash.py", line 1601, in dispatch
+    response_data = ctx.run(partial_func)
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/dash/_callback.py", line 720, in add_context
+    raise err
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/dash/_callback.py", line 711, in add_context
+    output_value = _invoke_callback(func, *func_args, **func_kwargs)  # type: ignore[reportArgumentType]
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/dash/_callback.py", line 58, in _invoke_callback
+    return func(*args, **kwargs)  # %% callback invoked %%
+  File "/Users/jeff/Downloads/XAi/GIT/Xapp/xforge/xforge.py", line 169, in visuals
+    for s in syms: fetch_and_store(s)
+                   ~~~~~~~~~~~~~~~^^^
+  File "/Users/jeff/Downloads/XAi/GIT/Xapp/xforge/xforge.py", line 68, in fetch_and_store
+    df.to_sql('price_history', conn, if_exists='append', index=False)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/pandas/core/generic.py", line 3052, in to_sql
+    return sql.to_sql(
+           ~~~~~~~~~~^
+        self,
+        ^^^^^
+    ...<8 lines>...
+        method=method,
+        ^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/pandas/io/sql.py", line 841, in to_sql
+    return pandas_sql.to_sql(
+           ~~~~~~~~~~~~~~~~~^
+        frame,
+        ^^^^^^
+    ...<9 lines>...
+        **engine_kwargs,
+        ^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/pandas/io/sql.py", line 2880, in to_sql
+    return table.insert(chunksize, method)
+           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/pandas/io/sql.py", line 1122, in insert
+    num_inserted = exec_insert(conn, keys, chunk_iter)
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/pandas/io/sql.py", line 2573, in _execute_insert
+    raise DatabaseError("Execution failed") from exc
+pandas.errors.DatabaseError: Execution failed
+2026-05-10 06:59:23,080 | INFO | 127.0.0.1 - - [10/May/2026 06:59:23] "[35m[1mPOST /_dash-update-component HTTP/1.1[0m" 500 -
+2026-05-10 06:59:31,102 | ERROR | Execution failed
+2026-05-10 06:59:31,103 | ERROR | Exception on /_dash-update-component [POST]
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/pandas/io/sql.py", line 2571, in _execute_insert
+    conn.executemany(self.insert_statement(num_rows=1), data_list)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: price_history.symbol, price_history.date
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/flask/app.py", line 1473, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/flask/app.py", line 882, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/flask/app.py", line 880, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/flask/app.py", line 865, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/dash/_get_app.py", line 17, in wrap
+    return ctx.run(func, self, *args, **kwargs)
+           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/dash/dash.py", line 1601, in dispatch
+    response_data = ctx.run(partial_func)
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/dash/_callback.py", line 720, in add_context
+    raise err
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/dash/_callback.py", line 711, in add_context
+    output_value = _invoke_callback(func, *func_args, **func_kwargs)  # type: ignore[reportArgumentType]
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/dash/_callback.py", line 58, in _invoke_callback
+    return func(*args, **kwargs)  # %% callback invoked %%
+  File "/Users/jeff/Downloads/XAi/GIT/Xapp/xforge/xforge.py", line 169, in visuals
+    for s in syms: fetch_and_store(s)
+                   ~~~~~~~~~~~~~~~^^^
+  File "/Users/jeff/Downloads/XAi/GIT/Xapp/xforge/xforge.py", line 68, in fetch_and_store
+    df.to_sql('price_history', conn, if_exists='append', index=False)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/pandas/core/generic.py", line 3052, in to_sql
+    return sql.to_sql(
+           ~~~~~~~~~~^
+        self,
+        ^^^^^
+    ...<8 lines>...
+        method=method,
+        ^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/pandas/io/sql.py", line 841, in to_sql
+    return pandas_sql.to_sql(
+           ~~~~~~~~~~~~~~~~~^
+        frame,
+        ^^^^^^
+    ...<9 lines>...
+        **engine_kwargs,
+        ^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/pandas/io/sql.py", line 2880, in to_sql
+    return table.insert(chunksize, method)
+           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/pandas/io/sql.py", line 1122, in insert
+    num_inserted = exec_insert(conn, keys, chunk_iter)
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/pandas/io/sql.py", line 2573, in _execute_insert
+    raise DatabaseError("Execution failed") from exc
+pandas.errors.DatabaseError: Execution failed
+2026-05-10 06:59:31,106 | INFO | 127.0.0.1 - - [10/May/2026 06:59:31] "[35m[1mPOST /_dash-update-component HTTP/1.1[0m" 500 -
+2026-05-10 06:59:48,733 | INFO | 127.0.0.1 - - [10/May/2026 06:59:48] "POST /_dash-update-component HTTP/1.1" 200 -
+2026-05-10 07:00:00,290 | ERROR | Execution failed
+2026-05-10 07:00:00,291 | ERROR | Exception on /_dash-update-component [POST]
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/pandas/io/sql.py", line 2571, in _execute_insert
+    conn.executemany(self.insert_statement(num_rows=1), data_list)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: price_history.symbol, price_history.date
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/flask/app.py", line 1473, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/flask/app.py", line 882, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/flask/app.py", line 880, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/flask/app.py", line 865, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/dash/_get_app.py", line 17, in wrap
+    return ctx.run(func, self, *args, **kwargs)
+           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/dash/dash.py", line 1601, in dispatch
+    response_data = ctx.run(partial_func)
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/dash/_callback.py", line 720, in add_context
+    raise err
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/dash/_callback.py", line 711, in add_context
+    output_value = _invoke_callback(func, *func_args, **func_kwargs)  # type: ignore[reportArgumentType]
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/dash/_callback.py", line 58, in _invoke_callback
+    return func(*args, **kwargs)  # %% callback invoked %%
+  File "/Users/jeff/Downloads/XAi/GIT/Xapp/xforge/xforge.py", line 169, in visuals
+    for s in syms: fetch_and_store(s)
+                   ~~~~~~~~~~~~~~~^^^
+  File "/Users/jeff/Downloads/XAi/GIT/Xapp/xforge/xforge.py", line 68, in fetch_and_store
+    df.to_sql('price_history', conn, if_exists='append', index=False)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/pandas/core/generic.py", line 3052, in to_sql
+    return sql.to_sql(
+           ~~~~~~~~~~^
+        self,
+        ^^^^^
+    ...<8 lines>...
+        method=method,
+        ^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/pandas/io/sql.py", line 841, in to_sql
+    return pandas_sql.to_sql(
+           ~~~~~~~~~~~~~~~~~^
+        frame,
+        ^^^^^^
+    ...<9 lines>...
+        **engine_kwargs,
+        ^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/pandas/io/sql.py", line 2880, in to_sql
+    return table.insert(chunksize, method)
+           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/pandas/io/sql.py", line 1122, in insert
+    num_inserted = exec_insert(conn, keys, chunk_iter)
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/pandas/io/sql.py", line 2573, in _execute_insert
+    raise DatabaseError("Execution failed") from exc
+pandas.errors.DatabaseError: Execution failed
+2026-05-10 07:00:00,294 | INFO | 127.0.0.1 - - [10/May/2026 07:00:00] "[35m[1mPOST /_dash-update-component HTTP/1.1[0m" 500 -
+2026-05-10 07:00:04,211 | ERROR | Execution failed
+2026-05-10 07:00:04,213 | ERROR | Exception on /_dash-update-component [POST]
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/pandas/io/sql.py", line 2571, in _execute_insert
+    conn.executemany(self.insert_statement(num_rows=1), data_list)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: price_history.symbol, price_history.date
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/flask/app.py", line 1473, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/flask/app.py", line 882, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/flask/app.py", line 880, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/flask/app.py", line 865, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/dash/_get_app.py", line 17, in wrap
+    return ctx.run(func, self, *args, **kwargs)
+           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/dash/dash.py", line 1601, in dispatch
+    response_data = ctx.run(partial_func)
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/dash/_callback.py", line 720, in add_context
+    raise err
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/dash/_callback.py", line 711, in add_context
+    output_value = _invoke_callback(func, *func_args, **func_kwargs)  # type: ignore[reportArgumentType]
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/dash/_callback.py", line 58, in _invoke_callback
+    return func(*args, **kwargs)  # %% callback invoked %%
+  File "/Users/jeff/Downloads/XAi/GIT/Xapp/xforge/xforge.py", line 169, in visuals
+    for s in syms: fetch_and_store(s)
+                   ~~~~~~~~~~~~~~~^^^
+  File "/Users/jeff/Downloads/XAi/GIT/Xapp/xforge/xforge.py", line 68, in fetch_and_store
+    df.to_sql('price_history', conn, if_exists='append', index=False)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/pandas/core/generic.py", line 3052, in to_sql
+    return sql.to_sql(
+           ~~~~~~~~~~^
+        self,
+        ^^^^^
+    ...<8 lines>...
+        method=method,
+        ^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/pandas/io/sql.py", line 841, in to_sql
+    return pandas_sql.to_sql(
+           ~~~~~~~~~~~~~~~~~^
+        frame,
+        ^^^^^^
+    ...<9 lines>...
+        **engine_kwargs,
+        ^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/pandas/io/sql.py", line 2880, in to_sql
+    return table.insert(chunksize, method)
+           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/pandas/io/sql.py", line 1122, in insert
+    num_inserted = exec_insert(conn, keys, chunk_iter)
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/pandas/io/sql.py", line 2573, in _execute_insert
+    raise DatabaseError("Execution failed") from exc
+pandas.errors.DatabaseError: Execution failed
+2026-05-10 07:00:04,216 | INFO | 127.0.0.1 - - [10/May/2026 07:00:04] "[35m[1mPOST /_dash-update-component HTTP/1.1[0m" 500 -
+2026-05-10 07:00:18,734 | INFO | 127.0.0.1 - - [10/May/2026 07:00:18] "POST /_dash-update-component HTTP/1.1" 200 -
+2026-05-10 07:00:48,733 | INFO | 127.0.0.1 - - [10/May/2026 07:00:48] "POST /_dash-update-component HTTP/1.1" 200 -
+2026-05-10 07:00:49,362 | ERROR | Execution failed
+2026-05-10 07:00:49,364 | ERROR | Exception on /_dash-update-component [POST]
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/pandas/io/sql.py", line 2571, in _execute_insert
+    conn.executemany(self.insert_statement(num_rows=1), data_list)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: price_history.symbol, price_history.date
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/flask/app.py", line 1473, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/flask/app.py", line 882, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/flask/app.py", line 880, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/flask/app.py", line 865, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/dash/_get_app.py", line 17, in wrap
+    return ctx.run(func, self, *args, **kwargs)
+           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/dash/dash.py", line 1601, in dispatch
+    response_data = ctx.run(partial_func)
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/dash/_callback.py", line 720, in add_context
+    raise err
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/dash/_callback.py", line 711, in add_context
+    output_value = _invoke_callback(func, *func_args, **func_kwargs)  # type: ignore[reportArgumentType]
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/dash/_callback.py", line 58, in _invoke_callback
+    return func(*args, **kwargs)  # %% callback invoked %%
+  File "/Users/jeff/Downloads/XAi/GIT/Xapp/xforge/xforge.py", line 169, in visuals
+    for s in syms: fetch_and_store(s)
+                   ~~~~~~~~~~~~~~~^^^
+  File "/Users/jeff/Downloads/XAi/GIT/Xapp/xforge/xforge.py", line 68, in fetch_and_store
+    df.to_sql('price_history', conn, if_exists='append', index=False)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/pandas/core/generic.py", line 3052, in to_sql
+    return sql.to_sql(
+           ~~~~~~~~~~^
+        self,
+        ^^^^^
+    ...<8 lines>...
+        method=method,
+        ^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/pandas/io/sql.py", line 841, in to_sql
+    return pandas_sql.to_sql(
+           ~~~~~~~~~~~~~~~~~^
+        frame,
+        ^^^^^^
+    ...<9 lines>...
+        **engine_kwargs,
+        ^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/pandas/io/sql.py", line 2880, in to_sql
+    return table.insert(chunksize, method)
+           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/pandas/io/sql.py", line 1122, in insert
+    num_inserted = exec_insert(conn, keys, chunk_iter)
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/pandas/io/sql.py", line 2573, in _execute_insert
+    raise DatabaseError("Execution failed") from exc
+pandas.errors.DatabaseError: Execution failed
+2026-05-10 07:00:49,366 | INFO | 127.0.0.1 - - [10/May/2026 07:00:49] "[35m[1mPOST /_dash-update-component HTTP/1.1[0m" 500 -
+2026-05-10 07:00:52,574 | ERROR | Execution failed
+2026-05-10 07:00:52,575 | ERROR | Exception on /_dash-update-component [POST]
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/pandas/io/sql.py", line 2571, in _execute_insert
+    conn.executemany(self.insert_statement(num_rows=1), data_list)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: price_history.symbol, price_history.date
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/flask/app.py", line 1473, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/flask/app.py", line 882, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/flask/app.py", line 880, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/flask/app.py", line 865, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/dash/_get_app.py", line 17, in wrap
+    return ctx.run(func, self, *args, **kwargs)
+           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/dash/dash.py", line 1601, in dispatch
+    response_data = ctx.run(partial_func)
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/dash/_callback.py", line 720, in add_context
+    raise err
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/dash/_callback.py", line 711, in add_context
+    output_value = _invoke_callback(func, *func_args, **func_kwargs)  # type: ignore[reportArgumentType]
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/dash/_callback.py", line 58, in _invoke_callback
+    return func(*args, **kwargs)  # %% callback invoked %%
+  File "/Users/jeff/Downloads/XAi/GIT/Xapp/xforge/xforge.py", line 169, in visuals
+    for s in syms: fetch_and_store(s)
+                   ~~~~~~~~~~~~~~~^^^
+  File "/Users/jeff/Downloads/XAi/GIT/Xapp/xforge/xforge.py", line 68, in fetch_and_store
+    df.to_sql('price_history', conn, if_exists='append', index=False)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/pandas/core/generic.py", line 3052, in to_sql
+    return sql.to_sql(
+           ~~~~~~~~~~^
+        self,
+        ^^^^^
+    ...<8 lines>...
+        method=method,
+        ^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/pandas/io/sql.py", line 841, in to_sql
+    return pandas_sql.to_sql(
+           ~~~~~~~~~~~~~~~~~^
+        frame,
+        ^^^^^^
+    ...<9 lines>...
+        **engine_kwargs,
+        ^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/pandas/io/sql.py", line 2880, in to_sql
+    return table.insert(chunksize, method)
+           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/pandas/io/sql.py", line 1122, in insert
+    num_inserted = exec_insert(conn, keys, chunk_iter)
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/pandas/io/sql.py", line 2573, in _execute_insert
+    raise DatabaseError("Execution failed") from exc
+pandas.errors.DatabaseError: Execution failed
+2026-05-10 07:00:52,578 | INFO | 127.0.0.1 - - [10/May/2026 07:00:52] "[35m[1mPOST /_dash-update-component HTTP/1.1[0m" 500 -
+2026-05-10 07:01:03,551 | ERROR | Execution failed
+2026-05-10 07:01:03,552 | ERROR | Exception on /_dash-update-component [POST]
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/pandas/io/sql.py", line 2571, in _execute_insert
+    conn.executemany(self.insert_statement(num_rows=1), data_list)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: price_history.symbol, price_history.date
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/flask/app.py", line 1473, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/flask/app.py", line 882, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/flask/app.py", line 880, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/flask/app.py", line 865, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/dash/_get_app.py", line 17, in wrap
+    return ctx.run(func, self, *args, **kwargs)
+           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/dash/dash.py", line 1601, in dispatch
+    response_data = ctx.run(partial_func)
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/dash/_callback.py", line 720, in add_context
+    raise err
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/dash/_callback.py", line 711, in add_context
+    output_value = _invoke_callback(func, *func_args, **func_kwargs)  # type: ignore[reportArgumentType]
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/dash/_callback.py", line 58, in _invoke_callback
+    return func(*args, **kwargs)  # %% callback invoked %%
+  File "/Users/jeff/Downloads/XAi/GIT/Xapp/xforge/xforge.py", line 169, in visuals
+    for s in syms: fetch_and_store(s)
+                   ~~~~~~~~~~~~~~~^^^
+  File "/Users/jeff/Downloads/XAi/GIT/Xapp/xforge/xforge.py", line 68, in fetch_and_store
+    df.to_sql('price_history', conn, if_exists='append', index=False)
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/pandas/core/generic.py", line 3052, in to_sql
+    return sql.to_sql(
+           ~~~~~~~~~~^
+        self,
+        ^^^^^
+    ...<8 lines>...
+        method=method,
+        ^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/pandas/io/sql.py", line 841, in to_sql
+    return pandas_sql.to_sql(
+           ~~~~~~~~~~~~~~~~~^
+        frame,
+        ^^^^^^
+    ...<9 lines>...
+        **engine_kwargs,
+        ^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/pandas/io/sql.py", line 2880, in to_sql
+    return table.insert(chunksize, method)
+           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/pandas/io/sql.py", line 1122, in insert
+    num_inserted = exec_insert(conn, keys, chunk_iter)
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/pandas/io/sql.py", line 2573, in _execute_insert
+    raise DatabaseError("Execution failed") from exc
+pandas.errors.DatabaseError: Execution failed
+2026-05-10 07:01:03,555 | INFO | 127.0.0.1 - - [10/May/2026 07:01:03] "[35m[1mPOST /_dash-update-component HTTP/1.1[0m" 500 -
+2026-05-10 07:01:10,999 | INFO | 127.0.0.1 - - [10/May/2026 07:01:10] "POST /_dash-update-component HTTP/1.1" 200 -
+2026-05-10 07:01:18,749 | INFO | 127.0.0.1 - - [10/May/2026 07:01:18] "POST /_dash-update-component HTTP/1.1" 200 -
+2026-05-10 07:01:48,733 | INFO | 127.0.0.1 - - [10/May/2026 07:01:48] "POST /_dash-update-component HTTP/1.1" 200 -
+2026-05-10 07:02:20,494 | INFO | 127.0.0.1 - - [10/May/2026 07:02:20] "POST /_dash-update-component HTTP/1.1" 200 -
+2026-05-10 07:02:58,496 | INFO | 127.0.0.1 - - [10/May/2026 07:02:58] "POST /_dash-update-component HTTP/1.1" 200 -
+2026-05-10 07:03:38,492 | INFO | 127.0.0.1 - - [10/May/2026 07:03:38] "POST /_dash-update-component HTTP/1.1" 200 -
+2026-05-10 07:04:38,494 | INFO | 127.0.0.1 - - [10/May/2026 07:04:38] "POST /_dash-update-component HTTP/1.1" 200 -
+2026-05-10 07:05:38,493 | INFO | 127.0.0.1 - - [10/May/2026 07:05:38] "POST /_dash-update-component HTTP/1.1" 200 -
+2026-05-10 07:05:48,734 | INFO | 127.0.0.1 - - [10/May/2026 07:05:48] "POST /_dash-update-component HTTP/1.1" 200 -
