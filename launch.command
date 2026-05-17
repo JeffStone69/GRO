@@ -1,12 +1,28 @@
 #!/bin/bash
-# XForge Trader v9.2 Beta – Silent macOS Launcher
-# Completely hides the Terminal window
+# XForge Trader - macOS Launcher (python3 explicit)
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-cd "$SCRIPT_DIR"
+cd "$(dirname "$0")"
 
-# Silent launch (no Terminal window appears)
-osascript -e 'tell application "Terminal" to close (do script "cd '"$SCRIPT_DIR"' && python3 launcher.py; exit")' 2>/dev/null &
+echo "============================================"
+echo "🚀 XForge Trader Consolidated Starting..."
+echo "============================================"
 
-# Fallback: run in background with no output
-python3 launcher.py > /dev/null 2>&1 &
+# Use python3 explicitly (macOS default)
+if command -v python3 &> /dev/null; then
+    PYTHON_CMD="python3"
+else
+    echo "❌ python3 not found. Please install Python 3."
+    exit 1
+fi
+
+# Optional: Run cleanup first
+read -p "Run repo cleanup before launch? (y/n): " choice
+if [[ "$choice" =~ ^[Yy]$ ]]; then
+    echo "🧹 Running cleanup..."
+    $PYTHON_CMD repo_cleanup.py --reset-logs
+fi
+
+echo "🌐 Launching XForge Trader (Gradio UI)..."
+$PYTHON_CMD launcher.py --clean
+
+read -p "Press Enter to close this window..."
