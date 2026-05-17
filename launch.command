@@ -1,4 +1,4 @@
 #!/bin/bash
 cd "$(dirname "$0")"
-echo "🚀 Starting XForge Trader..."
+echo "🚀 XForge Trader Clean Start..."
 python3 launcher.py --clean
