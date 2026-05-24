@@ -10,3 +10,9 @@
 2026-05-18 06:52:36,742 | INFO | HTTP Request: HEAD http://127.0.0.1:7860/ "HTTP/1.1 200 OK"
 2026-05-18 06:52:37,213 | INFO | HTTP Request: HEAD https://huggingface.co/api/telemetry/https%3A/api.gradio.app/gradio-launched-telemetry "HTTP/1.1 200 OK"
 2026-05-18 06:52:37,216 | INFO | HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2026-05-24 09:45:41,643 | INFO | 🚀 Starting XForge Trader with Charts & Options...
+2026-05-24 09:45:41,780 | INFO | HTTP Request: HEAD https://huggingface.co/api/telemetry/https%3A/api.gradio.app/gradio-initiated-analytics "HTTP/1.1 200 OK"
+2026-05-24 09:45:41,880 | INFO | HTTP Request: GET http://127.0.0.1:7860/gradio_api/startup-events "HTTP/1.1 200 OK"
+2026-05-24 09:45:41,899 | INFO | HTTP Request: HEAD http://127.0.0.1:7860/ "HTTP/1.1 200 OK"
+2026-05-24 09:45:42,385 | INFO | HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2026-05-24 09:45:42,514 | INFO | HTTP Request: HEAD https://huggingface.co/api/telemetry/https%3A/api.gradio.app/gradio-launched-telemetry "HTTP/1.1 200 OK"
