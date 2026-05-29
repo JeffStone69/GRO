@@ -1,11 +1,9 @@
-# macOS
+# Standard
+__pycache__/
+*.py[cod]
 .DS_Store
-*.DS_Store
-# Secrets & config (NEVER commit these)
-xforge_config.json
-*.json
-*.env
-*api_key*
-*secret*
-*key*
-.env.example
+*.log
+*.db
+data/
+logs/
+.env

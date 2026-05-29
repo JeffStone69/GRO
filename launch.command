@@ -1,4 +1,3 @@
 #!/bin/bash
 cd "$(dirname "$0")"
-echo "🚀 XForge Trader Clean Start..."
-python3 launcher.py --clean
+python3 -m streamlit run elite_dashboard.py --server.port 8501
